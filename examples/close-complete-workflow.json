@@ -1,0 +1,154 @@
+{
+  "name": "Close.com Complete Workflow Example",
+  "nodes": [
+    {
+      "parameters": {
+        "resource": "lead",
+        "operation": "getAll",
+        "returnAll": false,
+        "limit": 5,
+        "additionalFields": {
+          "query": "status:potential"
+        }
+      },
+      "id": "1",
+      "name": "Get Potential Leads",
+      "type": "n8n-nodes-close.close",
+      "typeVersion": 1,
+      "position": [240, 200]
+    },
+    {
+      "parameters": {
+        "resource": "contact",
+        "operation": "getAll",
+        "returnAll": false,
+        "limit": 10,
+        "additionalFields": {
+          "leadId": "={{ $json.id }}"
+        }
+      },
+      "id": "2", 
+      "name": "Get Contacts for Lead",
+      "type": "n8n-nodes-close.close",
+      "typeVersion": 1,
+      "position": [460, 200]
+    },
+    {
+      "parameters": {
+        "resource": "activity",
+        "operation": "create",
+        "activityType": "email",
+        "leadId": "={{ $json.lead_id }}",
+        "direction": "outbound",
+        "subject": "Follow-up Email",
+        "to": ["={{ $json.emails[0].email }}"],
+        "bodyText": "Hello {{ $json.name }}, following up on our conversation.",
+        "bodyHtml": "<p>Hello <strong>{{ $json.name }}</strong>,</p><p>Following up on our conversation.</p>",
+        "additionalFields": {
+          "contactId": "={{ $json.id }}",
+          "sendLater": false
+        }
+      },
+      "id": "3",
+      "name": "Send Follow-up Email",
+      "type": "n8n-nodes-close.close", 
+      "typeVersion": 1,
+      "position": [680, 200]
+    },
+    {
+      "parameters": {
+        "resource": "task",
+        "operation": "create",
+        "leadId": "={{ $json.lead_id }}",
+        "text": "Follow up with {{ $json.name }} in 1 week",
+        "dueDate": "={{ $now.plus({'days': 7}).toISO() }}",
+        "additionalFields": {
+          "contactId": "={{ $json.id }}"
+        }
+      },
+      "id": "4",
+      "name": "Create Follow-up Task",
+      "type": "n8n-nodes-close.close",
+      "typeVersion": 1,
+      "position": [900, 200]
+    },
+    {
+      "parameters": {
+        "resource": "opportunity",
+        "operation": "create",
+        "leadId": "={{ $json.lead_id }}",
+        "statusId": "stat_potential",
+        "note": "Opportunity created from workflow",
+        "value": 5000,
+        "valueFormatted": "$5,000",
+        "additionalFields": {
+          "contactId": "={{ $json.id }}",
+          "confidence": 50,
+          "expectedValue": 5000
+        }
+      },
+      "id": "5",
+      "name": "Create Opportunity",
+      "type": "n8n-nodes-close.close",
+      "typeVersion": 1,
+      "position": [1120, 200]
+    }
+  ],
+  "connections": {
+    "Get Potential Leads": {
+      "main": [
+        [
+          {
+            "node": "Get Contacts for Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Contacts for Lead": {
+      "main": [
+        [
+          {
+            "node": "Send Follow-up Email",
+            "type": "main", 
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Follow-up Email": {
+      "main": [
+        [
+          {
+            "node": "Create Follow-up Task",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Follow-up Task": {
+      "main": [
+        [
+          {
+            "node": "Create Opportunity", 
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "description": "Ein umfassender Workflow der Lead-Qualifizierung, Kontakt-Management, Email-Follow-up, Task-Erstellung und Opportunity-Tracking demonstriert"
+  },
+  "id": "2",
+  "tags": ["close", "crm", "sales", "workflow"]
+}

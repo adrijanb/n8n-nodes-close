@@ -1,0 +1,141 @@
+{
+  "name": "Close.com Basic Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "resource": "lead",
+        "operation": "getAll",
+        "returnAll": false,
+        "limit": 10,
+        "additionalFields": {
+          "query": "status:new"
+        }
+      },
+      "id": "1",
+      "name": "Get New Leads",
+      "type": "n8n-nodes-close.close",
+      "typeVersion": 1,
+      "position": [240, 300],
+      "credentials": {
+        "closeApi": {
+          "id": "1",
+          "name": "Close.com API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "lead",
+        "operation": "create",
+        "name": "={{ $json.name }}",
+        "description": "Lead from workflow",
+        "statusId": "stat_123456",
+        "additionalFields": {}
+      },
+      "id": "2",
+      "name": "Create Lead",
+      "type": "n8n-nodes-close.close",
+      "typeVersion": 1,
+      "position": [460, 300],
+      "credentials": {
+        "closeApi": {
+          "id": "1",
+          "name": "Close.com API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "activity",
+        "operation": "create",
+        "activityType": "note",
+        "leadId": "={{ $json.id }}",
+        "note": "Lead created via n8n workflow"
+      },
+      "id": "3",
+      "name": "Add Note",
+      "type": "n8n-nodes-close.close",
+      "typeVersion": 1,
+      "position": [680, 300],
+      "credentials": {
+        "closeApi": {
+          "id": "1",
+          "name": "Close.com API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "contact",
+        "operation": "create",
+        "leadId": "={{ $json.id }}",
+        "name": "John Doe",
+        "title": "CEO",
+        "additionalFields": {
+          "emails": [
+            {
+              "type": "office",
+              "email": "john@example.com"
+            }
+          ]
+        }
+      },
+      "id": "4",
+      "name": "Create Contact",
+      "type": "n8n-nodes-close.close",
+      "typeVersion": 1,
+      "position": [900, 300],
+      "credentials": {
+        "closeApi": {
+          "id": "1",
+          "name": "Close.com API"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Get New Leads": {
+      "main": [
+        [
+          {
+            "node": "Create Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Lead": {
+      "main": [
+        [
+          {
+            "node": "Add Note",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add Note": {
+      "main": [
+        [
+          {
+            "node": "Create Contact",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1",
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "id": "1",
+  "tags": []
+}
