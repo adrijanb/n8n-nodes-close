@@ -1,0 +1,81 @@
+{
+  "name": "Close.com Webhook Automation",
+  "nodes": [
+    {
+      "parameters": {
+        "event": "lead.created",
+        "additionalOptions": {
+          "webhookName": "n8n-lead-automation",
+          "statusFilter": "stat_new"
+        }
+      },
+      "id": "webhook1",
+      "name": "New Lead Webhook",
+      "type": "n8n-nodes-close.closeWebhookTrigger", 
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "resource": "activity",
+        "operation": "create",
+        "activityType": "note",
+        "leadId": "={{ $json.id }}",
+        "note": "Neuer Lead automatisch über Webhook erstellt: {{ $json.name }}"
+      },
+      "id": "note1",
+      "name": "Add Auto Note",
+      "type": "n8n-nodes-close.close",
+      "typeVersion": 1,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "resource": "task",
+        "operation": "create", 
+        "leadId": "={{ $json.id }}",
+        "text": "Qualifizierung für neuen Lead: {{ $json.name }}",
+        "dueDate": "={{ $now.plus({'days': 1}).toISO() }}",
+        "assignedTo": "user_default"
+      },
+      "id": "task1",
+      "name": "Create Qualification Task",
+      "type": "n8n-nodes-close.close",
+      "typeVersion": 1,
+      "position": [680, 300]
+    }
+  ],
+  "connections": {
+    "New Lead Webhook": {
+      "main": [
+        [
+          {
+            "node": "Add Auto Note",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add Auto Note": {
+      "main": [
+        [
+          {
+            "node": "Create Qualification Task",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "description": "Automatischer Workflow der auf neue Leads reagiert und automatisch Notizen und Qualifizierungs-Tasks erstellt"
+  },
+  "id": "webhook_example",
+  "tags": ["webhook", "automation", "leads"]
+}
