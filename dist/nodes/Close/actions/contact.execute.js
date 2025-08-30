@@ -82,7 +82,7 @@ async function getAllContacts(httpClient, paginator, i) {
         qs._fields = additionalFields.fields;
     }
     const response = await paginator.getAll('/contact/', { returnAll, limit }, qs);
-    return response.map(item => ({ json: item }));
+    return response.map((item) => ({ json: item }));
 }
 async function updateContact(httpClient, i) {
     const contactId = this.getNodeParameter('contactId', i);
@@ -100,7 +100,7 @@ async function updateContact(httpClient, i) {
             email: email.email,
         }));
     }
-    // Phone numbers  
+    // Phone numbers
     if (updateFields.phones && updateFields.phones.phone) {
         body.phones = updateFields.phones.phone.map((phone) => ({
             type: phone.type || 'office',

@@ -104,7 +104,7 @@ exports.opportunityFields = [
             },
         },
         default: 0,
-        description: 'The monetary value of the opportunity',
+        description: 'The monetary value of the opportunity in cents (e.g., 100000 for $1,000)',
     },
     {
         displayName: 'Value Formatted',
@@ -117,7 +117,7 @@ exports.opportunityFields = [
             },
         },
         default: '',
-        description: 'Formatted display value (e.g., "$1,000")',
+        description: 'Human-readable formatted display value with currency symbol (e.g., "$1,000", "€500", "£250"). This is for display purposes only.',
     },
     {
         displayName: 'Additional Fields',
@@ -151,7 +151,7 @@ exports.opportunityFields = [
                 name: 'expectedValue',
                 type: 'number',
                 default: 0,
-                description: 'The expected value of the opportunity',
+                description: 'The expected value of the opportunity in cents (e.g., 50000 for $500)',
             },
             {
                 displayName: 'Confidence',
@@ -327,14 +327,14 @@ exports.opportunityFields = [
                 name: 'value',
                 type: 'number',
                 default: 0,
-                description: 'The monetary value of the opportunity',
+                description: 'The monetary value of the opportunity in cents (e.g., 100000 for $1,000)',
             },
             {
                 displayName: 'Value Formatted',
                 name: 'valueFormatted',
                 type: 'string',
                 default: '',
-                description: 'Formatted display value',
+                description: 'Human-readable formatted display value with currency symbol (e.g., "$1,000", "€500", "£250"). This is for display purposes only.',
             },
             {
                 displayName: 'Status',
@@ -351,7 +351,7 @@ exports.opportunityFields = [
                 name: 'expectedValue',
                 type: 'number',
                 default: 0,
-                description: 'The expected value of the opportunity',
+                description: 'The expected value of the opportunity in cents (e.g., 50000 for $500)',
             },
             {
                 displayName: 'Confidence',
