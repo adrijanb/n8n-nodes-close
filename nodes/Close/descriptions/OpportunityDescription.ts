@@ -64,9 +64,12 @@ export const opportunityFields: INodeProperties[] = [
 		description: 'The ID of the lead this opportunity belongs to',
 	},
 	{
-		displayName: 'Status ID',
+		displayName: 'Status',
 		name: 'statusId',
-		type: 'string',
+		type: 'options',
+		typeOptions: {
+			loadOptionsMethod: 'getOpportunityStatuses',
+		},
 		required: true,
 		displayOptions: {
 			show: {
@@ -75,7 +78,7 @@ export const opportunityFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'The status ID for the opportunity',
+		description: 'The status for the opportunity',
 	},
 	{
 		displayName: 'Note',
@@ -337,11 +340,14 @@ export const opportunityFields: INodeProperties[] = [
 				description: 'Formatted display value',
 			},
 			{
-				displayName: 'Status ID',
+				displayName: 'Status',
 				name: 'statusId',
-				type: 'string',
+				type: 'options',
+				typeOptions: {
+					loadOptionsMethod: 'getOpportunityStatuses',
+				},
 				default: '',
-				description: 'The status ID for the opportunity',
+				description: 'The status for the opportunity',
 			},
 			{
 				displayName: 'Expected Value',

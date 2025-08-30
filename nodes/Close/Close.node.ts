@@ -1,6 +1,8 @@
 import {
 	IExecuteFunctions,
+	ILoadOptionsFunctions,
 	INodeExecutionData,
+	INodePropertyOptions,
 	INodeType,
 	INodeTypeDescription,
 	NodeOperationError,
@@ -203,6 +205,107 @@ export class Close implements INodeType {
 			...templateFields,
 			...customFieldFields,
 		],
+	};
+
+	methods = {
+		loadOptions: {
+			// Load Lead Statuses
+			async getLeadStatuses(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				const { CloseHttpClient } = await import('./transports/httpClient');
+				const httpClient = new CloseHttpClient(this);
+
+				try {
+					const response = await httpClient.makeRequest('GET', '/status/lead/');
+					const statuses = response.data || [];
+
+					return statuses.map((status: any) => ({
+						name: status.label || status.id,
+						value: status.id,
+						description: `${status.label} (${status.id})`,
+					}));
+				} catch (error) {
+					return [];
+				}
+			},
+
+			// Load Custom Fields for Leads
+			async getLeadCustomFields(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				const { CloseHttpClient } = await import('./transports/httpClient');
+				const httpClient = new CloseHttpClient(this);
+
+				try {
+					const response = await httpClient.makeRequest('GET', '/custom_field/lead/');
+					const fields = response.data || [];
+
+					return fields.map((field: any) => ({
+						name: field.name || field.id,
+						value: field.id,
+						description: `${field.name} (${field.type}) - ${field.id}`,
+					}));
+				} catch (error) {
+					return [];
+				}
+			},
+
+			// Load Custom Fields for Contacts
+			async getContactCustomFields(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				const { CloseHttpClient } = await import('./transports/httpClient');
+				const httpClient = new CloseHttpClient(this);
+
+				try {
+					const response = await httpClient.makeRequest('GET', '/custom_field/contact/');
+					const fields = response.data || [];
+
+					return fields.map((field: any) => ({
+						name: field.name || field.id,
+						value: field.id,
+						description: `${field.name} (${field.type}) - ${field.id}`,
+					}));
+				} catch (error) {
+					return [];
+				}
+			},
+
+			// Load Custom Fields for Opportunities
+			async getOpportunityCustomFields(
+				this: ILoadOptionsFunctions,
+			): Promise<INodePropertyOptions[]> {
+				const { CloseHttpClient } = await import('./transports/httpClient');
+				const httpClient = new CloseHttpClient(this);
+
+				try {
+					const response = await httpClient.makeRequest('GET', '/custom_field/opportunity/');
+					const fields = response.data || [];
+
+					return fields.map((field: any) => ({
+						name: field.name || field.id,
+						value: field.id,
+						description: `${field.name} (${field.type}) - ${field.id}`,
+					}));
+				} catch (error) {
+					return [];
+				}
+			},
+
+			// Load Opportunity Statuses
+			async getOpportunityStatuses(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				const { CloseHttpClient } = await import('./transports/httpClient');
+				const httpClient = new CloseHttpClient(this);
+
+				try {
+					const response = await httpClient.makeRequest('GET', '/status/opportunity/');
+					const statuses = response.data || [];
+
+					return statuses.map((status: any) => ({
+						name: status.label || status.id,
+						value: status.id,
+						description: `${status.label} (${status.id})`,
+					}));
+				} catch (error) {
+					return [];
+				}
+			},
+		},
 	};
 
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {

@@ -1,4 +1,27 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Close = void 0;
 const n8n_workflow_1 = require("n8n-workflow");
@@ -183,6 +206,95 @@ class Close {
                 ...TemplateDescription_1.templateFields,
                 ...CustomFieldDescription_1.customFieldFields,
             ],
+        };
+        this.methods = {
+            loadOptions: {
+                // Load Lead Statuses
+                async getLeadStatuses() {
+                    const { CloseHttpClient } = await Promise.resolve().then(() => __importStar(require('./transports/httpClient')));
+                    const httpClient = new CloseHttpClient(this);
+                    try {
+                        const response = await httpClient.makeRequest('GET', '/status/lead/');
+                        const statuses = response.data || [];
+                        return statuses.map((status) => ({
+                            name: status.label || status.id,
+                            value: status.id,
+                            description: `${status.label} (${status.id})`,
+                        }));
+                    }
+                    catch (error) {
+                        return [];
+                    }
+                },
+                // Load Custom Fields for Leads
+                async getLeadCustomFields() {
+                    const { CloseHttpClient } = await Promise.resolve().then(() => __importStar(require('./transports/httpClient')));
+                    const httpClient = new CloseHttpClient(this);
+                    try {
+                        const response = await httpClient.makeRequest('GET', '/custom_field/lead/');
+                        const fields = response.data || [];
+                        return fields.map((field) => ({
+                            name: field.name || field.id,
+                            value: field.id,
+                            description: `${field.name} (${field.type}) - ${field.id}`,
+                        }));
+                    }
+                    catch (error) {
+                        return [];
+                    }
+                },
+                // Load Custom Fields for Contacts
+                async getContactCustomFields() {
+                    const { CloseHttpClient } = await Promise.resolve().then(() => __importStar(require('./transports/httpClient')));
+                    const httpClient = new CloseHttpClient(this);
+                    try {
+                        const response = await httpClient.makeRequest('GET', '/custom_field/contact/');
+                        const fields = response.data || [];
+                        return fields.map((field) => ({
+                            name: field.name || field.id,
+                            value: field.id,
+                            description: `${field.name} (${field.type}) - ${field.id}`,
+                        }));
+                    }
+                    catch (error) {
+                        return [];
+                    }
+                },
+                // Load Custom Fields for Opportunities
+                async getOpportunityCustomFields() {
+                    const { CloseHttpClient } = await Promise.resolve().then(() => __importStar(require('./transports/httpClient')));
+                    const httpClient = new CloseHttpClient(this);
+                    try {
+                        const response = await httpClient.makeRequest('GET', '/custom_field/opportunity/');
+                        const fields = response.data || [];
+                        return fields.map((field) => ({
+                            name: field.name || field.id,
+                            value: field.id,
+                            description: `${field.name} (${field.type}) - ${field.id}`,
+                        }));
+                    }
+                    catch (error) {
+                        return [];
+                    }
+                },
+                // Load Opportunity Statuses
+                async getOpportunityStatuses() {
+                    const { CloseHttpClient } = await Promise.resolve().then(() => __importStar(require('./transports/httpClient')));
+                    const httpClient = new CloseHttpClient(this);
+                    try {
+                        const response = await httpClient.makeRequest('GET', '/status/opportunity/');
+                        const statuses = response.data || [];
+                        return statuses.map((status) => ({
+                            name: status.label || status.id,
+                            value: status.id,
+                            description: `${status.label} (${status.id})`,
+                        }));
+                    }
+                    catch (error) {
+                        return [];
+                    }
+                },
+            },
         };
     }
     async execute() {

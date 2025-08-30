@@ -49,24 +49,70 @@ async function createLead(
 	const url = this.getNodeParameter('url', i, '') as string;
 	if (url) body.url = url;
 
-	// Custom fields
+	// Additional fields
 	const additionalFields = this.getNodeParameter('additionalFields', i) as any;
-	if (additionalFields.customFields) {
-		Object.assign(body, additionalFields.customFields);
+
+	// Custom fields
+	if (additionalFields.customFields && additionalFields.customFields.customField) {
+		const customFields = additionalFields.customFields.customField;
+		console.log('DEBUG: Custom fields data:', JSON.stringify(customFields, null, 2));
+		for (const field of customFields) {
+			if (field.fieldId && field.value !== undefined && field.value !== '') {
+				const customFieldKey = `custom.${field.fieldId}`;
+				console.log(`DEBUG: Setting custom field ${customFieldKey} = ${field.value}`);
+				body[customFieldKey] = field.value;
+			} else {
+				console.log(`DEBUG: Skipping field:`, field);
+			}
+		}
+	} else {
+		console.log(
+			'DEBUG: No custom fields found in additionalFields:',
+			JSON.stringify(additionalFields, null, 2),
+		);
 	}
 
-	// Contacts
-	if (additionalFields.contacts) {
-		body.contacts = additionalFields.contacts;
+	// Addresses (now separate main field)
+	const addresses = this.getNodeParameter('addresses', i, {}) as any;
+	if (addresses && addresses.address) {
+		body.addresses = addresses.address.filter(
+			(addr: any) => addr.address_1 || addr.city || addr.state || addr.zipcode || addr.country,
+		);
 	}
 
-	// Addresses
-	if (additionalFields.addresses) {
-		body.addresses = additionalFields.addresses;
+	// Contacts (now separate main field)
+	const contacts = this.getNodeParameter('contacts', i, {}) as any;
+	if (contacts && contacts.contact) {
+		body.contacts = contacts.contact
+			.filter(
+				(contact: any) =>
+					contact.name ||
+					(contact.emails && contact.emails.email && contact.emails.email.length > 0),
+			)
+			.map((contact: any) => {
+				const processedContact: any = {};
+
+				if (contact.name) processedContact.name = contact.name;
+				if (contact.title) processedContact.title = contact.title;
+
+				// Process emails
+				if (contact.emails && contact.emails.email) {
+					processedContact.emails = contact.emails.email.filter((email: any) => email.email);
+				}
+
+				// Process phones
+				if (contact.phones && contact.phones.phone) {
+					processedContact.phones = contact.phones.phone.filter((phone: any) => phone.phone);
+				}
+
+				return processedContact;
+			});
 	}
+
+	console.log('DEBUG: Final body being sent to Close.com:', JSON.stringify(body, null, 2));
 
 	const response = await httpClient.makeRequest('POST', '/lead/', body);
-	
+
 	return [{ json: response }];
 }
 
@@ -84,7 +130,7 @@ async function getLead(
 	}
 
 	const response = await httpClient.makeRequest('GET', `/lead/${leadId}/`, undefined, qs);
-	
+
 	return [{ json: response }];
 }
 
@@ -113,7 +159,7 @@ async function getAllLeads(
 
 	const response = await paginator.getAll('/lead/', { returnAll, limit }, qs);
 
-	return response.map(item => ({ json: item }));
+	return response.map((item) => ({ json: item }));
 }
 
 async function updateLead(
@@ -133,12 +179,18 @@ async function updateLead(
 	if (updateFields.url !== undefined) body.url = updateFields.url;
 
 	// Custom fields
-	if (updateFields.customFields) {
-		Object.assign(body, updateFields.customFields);
+	if (updateFields.customFields && updateFields.customFields.customField) {
+		const customFields = updateFields.customFields.customField;
+		for (const field of customFields) {
+			if (field.fieldId && field.value !== undefined && field.value !== '') {
+				const customFieldKey = `custom.${field.fieldId}`;
+				body[customFieldKey] = field.value;
+			}
+		}
 	}
 
 	const response = await httpClient.makeRequest('PUT', `/lead/${leadId}/`, body);
-	
+
 	return [{ json: response }];
 }
 
@@ -150,7 +202,7 @@ async function deleteLead(
 	const leadId = this.getNodeParameter('leadId', i) as string;
 
 	await httpClient.makeRequest('DELETE', `/lead/${leadId}/`);
-	
+
 	return [{ json: { success: true, id: leadId } }];
 }
 
@@ -168,6 +220,6 @@ async function mergeLeads(
 	};
 
 	const response = await httpClient.makeRequest('POST', '/lead/merge/', body);
-	
+
 	return [{ json: response }];
 }

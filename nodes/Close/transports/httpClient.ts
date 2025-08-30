@@ -1,8 +1,14 @@
-import { IExecuteFunctions, IHookFunctions, IHttpRequestMethods, IHttpRequestOptions } from 'n8n-workflow';
+import {
+	IExecuteFunctions,
+	IHookFunctions,
+	ILoadOptionsFunctions,
+	IHttpRequestMethods,
+	IHttpRequestOptions,
+} from 'n8n-workflow';
 import { handleCloseApiError } from '../mappers/error';
 
 export class CloseHttpClient {
-	constructor(private context: IExecuteFunctions | IHookFunctions) {}
+	constructor(private context: IExecuteFunctions | IHookFunctions | ILoadOptionsFunctions) {}
 
 	async makeRequest(
 		method: IHttpRequestMethods,
@@ -12,7 +18,7 @@ export class CloseHttpClient {
 		headers?: any,
 	): Promise<any> {
 		const credentials = await this.context.getCredentials('closeApi');
-		
+
 		const options: IHttpRequestOptions = {
 			method,
 			url: `https://api.close.com/api/v1${endpoint}`,
@@ -21,7 +27,7 @@ export class CloseHttpClient {
 				password: '',
 			},
 			headers: {
-				'Accept': 'application/json',
+				Accept: 'application/json',
 				'Content-Type': 'application/json',
 				...headers,
 			},

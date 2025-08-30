@@ -15,8 +15,8 @@ import { CloseHttpClient } from '../transports/httpClient';
 
 export class CloseWebhookTrigger implements INodeType {
 	description: INodeTypeDescription = {
-		displayName: 'Close Webhook Trigger',
-		name: 'closeWebhookTrigger',
+		displayName: 'Close Webhook',
+		name: 'closeWebhook',
 		icon: 'file:close.svg',
 		group: ['trigger'],
 		version: 1,

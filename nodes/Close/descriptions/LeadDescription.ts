@@ -83,9 +83,12 @@ export const leadFields: INodeProperties[] = [
 		description: 'A description of the lead',
 	},
 	{
-		displayName: 'Status ID',
+		displayName: 'Status',
 		name: 'statusId',
-		type: 'string',
+		type: 'options',
+		typeOptions: {
+			loadOptionsMethod: 'getLeadStatuses',
+		},
 		displayOptions: {
 			show: {
 				resource: ['lead'],
@@ -93,7 +96,7 @@ export const leadFields: INodeProperties[] = [
 			},
 		},
 		default: '',
-		description: 'The status ID for the lead',
+		description: 'The status for the lead',
 	},
 	{
 		displayName: 'Additional Fields',
@@ -130,11 +133,14 @@ export const leadFields: INodeProperties[] = [
 						displayName: 'Custom Field',
 						values: [
 							{
-								displayName: 'Field ID',
+								displayName: 'Field',
 								name: 'fieldId',
-								type: 'string',
+								type: 'options',
+								typeOptions: {
+									loadOptionsMethod: 'getLeadCustomFields',
+								},
 								default: '',
-								description: 'The custom field ID (e.g., custom.cf_abc123)',
+								description: 'The custom field to set',
 							},
 							{
 								displayName: 'Value',
@@ -142,6 +148,231 @@ export const leadFields: INodeProperties[] = [
 								type: 'string',
 								default: '',
 								description: 'The value for the custom field',
+							},
+						],
+					},
+				],
+			},
+		],
+	},
+
+	// Addresses for Lead Creation
+	{
+		displayName: 'Addresses',
+		name: 'addresses',
+		type: 'fixedCollection',
+		default: {},
+		displayOptions: {
+			show: {
+				resource: ['lead'],
+				operation: ['create'],
+			},
+		},
+		description: 'Addresses for the lead',
+		typeOptions: {
+			multipleValues: true,
+		},
+		options: [
+			{
+				name: 'address',
+				displayName: 'Address',
+				values: [
+					{
+						displayName: 'Type',
+						name: 'type',
+						type: 'options',
+						options: [
+							{
+								name: 'Office',
+								value: 'office',
+							},
+							{
+								name: 'Mailing',
+								value: 'mailing',
+							},
+							{
+								name: 'Other',
+								value: 'other',
+							},
+						],
+						default: 'office',
+						description: 'Type of address',
+					},
+					{
+						displayName: 'Address Line 1',
+						name: 'address_1',
+						type: 'string',
+						default: '',
+						description: 'First line of the address',
+					},
+					{
+						displayName: 'Address Line 2',
+						name: 'address_2',
+						type: 'string',
+						default: '',
+						description: 'Second line of the address (optional)',
+					},
+					{
+						displayName: 'City',
+						name: 'city',
+						type: 'string',
+						default: '',
+						description: 'City',
+					},
+					{
+						displayName: 'State',
+						name: 'state',
+						type: 'string',
+						default: '',
+						description: 'State or province',
+					},
+					{
+						displayName: 'Postal Code',
+						name: 'zipcode',
+						type: 'string',
+						default: '',
+						description: 'Postal or ZIP code',
+					},
+					{
+						displayName: 'Country',
+						name: 'country',
+						type: 'string',
+						default: '',
+						description: 'Country',
+					},
+				],
+			},
+		],
+	},
+
+	// Contacts for Lead Creation
+	{
+		displayName: 'Contacts',
+		name: 'contacts',
+		type: 'fixedCollection',
+		default: {},
+		displayOptions: {
+			show: {
+				resource: ['lead'],
+				operation: ['create'],
+			},
+		},
+		description: 'Contacts to create with the lead',
+		typeOptions: {
+			multipleValues: true,
+		},
+		options: [
+			{
+				name: 'contact',
+				displayName: 'Contact',
+				values: [
+					{
+						displayName: 'Name',
+						name: 'name',
+						type: 'string',
+						default: '',
+						description: 'Full name of the contact',
+					},
+					{
+						displayName: 'Title',
+						name: 'title',
+						type: 'string',
+						default: '',
+						description: 'Job title of the contact',
+					},
+					{
+						displayName: 'Email Addresses',
+						name: 'emails',
+						type: 'fixedCollection',
+						default: {},
+						description: 'Email addresses for the contact',
+						typeOptions: {
+							multipleValues: true,
+						},
+						options: [
+							{
+								name: 'email',
+								displayName: 'Email',
+								values: [
+									{
+										displayName: 'Type',
+										name: 'type',
+										type: 'options',
+										options: [
+											{
+												name: 'Office',
+												value: 'office',
+											},
+											{
+												name: 'Personal',
+												value: 'personal',
+											},
+											{
+												name: 'Other',
+												value: 'other',
+											},
+										],
+										default: 'office',
+										description: 'Type of email address',
+									},
+									{
+										displayName: 'Email',
+										name: 'email',
+										type: 'string',
+										default: '',
+										description: 'The email address',
+									},
+								],
+							},
+						],
+					},
+					{
+						displayName: 'Phone Numbers',
+						name: 'phones',
+						type: 'fixedCollection',
+						default: {},
+						description: 'Phone numbers for the contact',
+						typeOptions: {
+							multipleValues: true,
+						},
+						options: [
+							{
+								name: 'phone',
+								displayName: 'Phone',
+								values: [
+									{
+										displayName: 'Type',
+										name: 'type',
+										type: 'options',
+										options: [
+											{
+												name: 'Office',
+												value: 'office',
+											},
+											{
+												name: 'Mobile',
+												value: 'mobile',
+											},
+											{
+												name: 'Home',
+												value: 'home',
+											},
+											{
+												name: 'Other',
+												value: 'other',
+											},
+										],
+										default: 'office',
+										description: 'Type of phone number',
+									},
+									{
+										displayName: 'Phone',
+										name: 'phone',
+										type: 'string',
+										default: '',
+										description: 'The phone number',
+									},
+								],
 							},
 						],
 					},
@@ -285,11 +516,14 @@ export const leadFields: INodeProperties[] = [
 				description: 'A description of the lead',
 			},
 			{
-				displayName: 'Status ID',
+				displayName: 'Status',
 				name: 'statusId',
-				type: 'string',
+				type: 'options',
+				typeOptions: {
+					loadOptionsMethod: 'getLeadStatuses',
+				},
 				default: '',
-				description: 'The status ID for the lead',
+				description: 'The status for the lead',
 			},
 			{
 				displayName: 'URL',
@@ -313,11 +547,14 @@ export const leadFields: INodeProperties[] = [
 						displayName: 'Custom Field',
 						values: [
 							{
-								displayName: 'Field ID',
+								displayName: 'Field',
 								name: 'fieldId',
-								type: 'string',
+								type: 'options',
+								typeOptions: {
+									loadOptionsMethod: 'getLeadCustomFields',
+								},
 								default: '',
-								description: 'The custom field ID (e.g., custom.cf_abc123)',
+								description: 'The custom field to update',
 							},
 							{
 								displayName: 'Value',

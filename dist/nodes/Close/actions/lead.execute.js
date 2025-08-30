@@ -40,19 +40,55 @@ async function createLead(httpClient, i) {
     const url = this.getNodeParameter('url', i, '');
     if (url)
         body.url = url;
-    // Custom fields
+    // Additional fields
     const additionalFields = this.getNodeParameter('additionalFields', i);
-    if (additionalFields.customFields) {
-        Object.assign(body, additionalFields.customFields);
+    // Custom fields
+    if (additionalFields.customFields && additionalFields.customFields.customField) {
+        const customFields = additionalFields.customFields.customField;
+        console.log('DEBUG: Custom fields data:', JSON.stringify(customFields, null, 2));
+        for (const field of customFields) {
+            if (field.fieldId && field.value !== undefined && field.value !== '') {
+                const customFieldKey = `custom.${field.fieldId}`;
+                console.log(`DEBUG: Setting custom field ${customFieldKey} = ${field.value}`);
+                body[customFieldKey] = field.value;
+            }
+            else {
+                console.log(`DEBUG: Skipping field:`, field);
+            }
+        }
     }
-    // Contacts
-    if (additionalFields.contacts) {
-        body.contacts = additionalFields.contacts;
+    else {
+        console.log('DEBUG: No custom fields found in additionalFields:', JSON.stringify(additionalFields, null, 2));
     }
-    // Addresses
-    if (additionalFields.addresses) {
-        body.addresses = additionalFields.addresses;
+    // Addresses (now separate main field)
+    const addresses = this.getNodeParameter('addresses', i, {});
+    if (addresses && addresses.address) {
+        body.addresses = addresses.address.filter((addr) => addr.address_1 || addr.city || addr.state || addr.zipcode || addr.country);
     }
+    // Contacts (now separate main field)
+    const contacts = this.getNodeParameter('contacts', i, {});
+    if (contacts && contacts.contact) {
+        body.contacts = contacts.contact
+            .filter((contact) => contact.name ||
+            (contact.emails && contact.emails.email && contact.emails.email.length > 0))
+            .map((contact) => {
+            const processedContact = {};
+            if (contact.name)
+                processedContact.name = contact.name;
+            if (contact.title)
+                processedContact.title = contact.title;
+            // Process emails
+            if (contact.emails && contact.emails.email) {
+                processedContact.emails = contact.emails.email.filter((email) => email.email);
+            }
+            // Process phones
+            if (contact.phones && contact.phones.phone) {
+                processedContact.phones = contact.phones.phone.filter((phone) => phone.phone);
+            }
+            return processedContact;
+        });
+    }
+    console.log('DEBUG: Final body being sent to Close.com:', JSON.stringify(body, null, 2));
     const response = await httpClient.makeRequest('POST', '/lead/', body);
     return [{ json: response }];
 }
@@ -82,7 +118,7 @@ async function getAllLeads(httpClient, paginator, i) {
         qs._order_by = additionalFields.orderBy;
     }
     const response = await paginator.getAll('/lead/', { returnAll, limit }, qs);
-    return response.map(item => ({ json: item }));
+    return response.map((item) => ({ json: item }));
 }
 async function updateLead(httpClient, i) {
     const leadId = this.getNodeParameter('leadId', i);
@@ -98,8 +134,14 @@ async function updateLead(httpClient, i) {
     if (updateFields.url !== undefined)
         body.url = updateFields.url;
     // Custom fields
-    if (updateFields.customFields) {
-        Object.assign(body, updateFields.customFields);
+    if (updateFields.customFields && updateFields.customFields.customField) {
+        const customFields = updateFields.customFields.customField;
+        for (const field of customFields) {
+            if (field.fieldId && field.value !== undefined && field.value !== '') {
+                const customFieldKey = `custom.${field.fieldId}`;
+                body[customFieldKey] = field.value;
+            }
+        }
     }
     const response = await httpClient.makeRequest('PUT', `/lead/${leadId}/`, body);
     return [{ json: response }];

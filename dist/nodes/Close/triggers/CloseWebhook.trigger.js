@@ -5,8 +5,8 @@ const httpClient_1 = require("../transports/httpClient");
 class CloseWebhookTrigger {
     constructor() {
         this.description = {
-            displayName: 'Close Webhook Trigger',
-            name: 'closeWebhookTrigger',
+            displayName: 'Close Webhook',
+            name: 'closeWebhook',
             icon: 'file:close.svg',
             group: ['trigger'],
             version: 1,
