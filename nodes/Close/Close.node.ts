@@ -9,11 +9,13 @@ import {
 
 // Import action handlers
 import { executeLeadAction } from './actions/lead.execute';
+import { executeLeadStatusAction } from './actions/leadStatus.execute';
 import { executeContactAction } from './actions/contact.execute';
 import { executeActivityAction } from './actions/activity.execute';
 import { executeMeetingSearchAction } from './actions/meetingSearch.execute';
 import { executeOpportunityAction } from './actions/opportunity.execute';
 import { executeOpportunityStatusAction } from './actions/opportunityStatus.execute';
+import { executeIntegrationLinkAction } from './actions/integrationLink.execute';
 import { executeTaskAction } from './actions/task.execute';
 import { executeUserAction } from './actions/user.execute';
 import { executeTemplateAction } from './actions/template.execute';
@@ -21,6 +23,7 @@ import { executeCustomFieldAction } from './actions/customField.execute';
 
 // Import descriptions
 import { leadOperations, leadFields } from './descriptions/LeadDescription';
+import { leadStatusOperations, leadStatusFields } from './descriptions/LeadStatusDescription';
 import { contactOperations, contactFields } from './descriptions/ContactDescription';
 import { activityOperations, activityFields } from './descriptions/ActivityDescription';
 import {
@@ -32,6 +35,10 @@ import {
 	opportunityStatusOperations,
 	opportunityStatusFields,
 } from './descriptions/OpportunityStatusDescription';
+import {
+	integrationLinkOperations,
+	integrationLinkFields,
+} from './descriptions/IntegrationLinkDescription';
 import { taskOperations, taskFields } from './descriptions/TaskDescription';
 import { userOperations, userFields } from './descriptions/UserDescription';
 import { templateOperations, templateFields } from './descriptions/TemplateDescription';
@@ -71,6 +78,11 @@ export class Close implements INodeType {
 						description: 'Operations on leads',
 					},
 					{
+						name: 'Lead Status',
+						value: 'leadStatus',
+						description: 'Operations on lead statuses',
+					},
+					{
 						name: 'Contact',
 						value: 'contact',
 						description: 'Operations on contacts',
@@ -94,6 +106,11 @@ export class Close implements INodeType {
 						name: 'Opportunity Status',
 						value: 'opportunityStatus',
 						description: 'Operations on opportunity statuses',
+					},
+					{
+						name: 'Integration Link',
+						value: 'integrationLink',
+						description: 'Operations on integration links',
 					},
 					{
 						name: 'Task',
@@ -121,11 +138,13 @@ export class Close implements INodeType {
 
 			// Operations
 			...leadOperations,
+			...leadStatusOperations,
 			...contactOperations,
 			...activityOperations,
 			...meetingSearchOperations,
 			...opportunityOperations,
 			...opportunityStatusOperations,
+			...integrationLinkOperations,
 			...taskOperations,
 			...userOperations,
 			...templateOperations,
@@ -133,11 +152,13 @@ export class Close implements INodeType {
 
 			// Fields
 			...leadFields,
+			...leadStatusFields,
 			...contactFields,
 			...activityFields,
 			...meetingSearchFields,
 			...opportunityFields,
 			...opportunityStatusFields,
+			...integrationLinkFields,
 			...taskFields,
 			...userFields,
 			...templateFields,
@@ -160,6 +181,9 @@ export class Close implements INodeType {
 					case 'lead':
 						responseData = await executeLeadAction.call(this, operation, i);
 						break;
+					case 'leadStatus':
+						responseData = await executeLeadStatusAction.call(this, operation, i);
+						break;
 					case 'contact':
 						responseData = await executeContactAction.call(this, operation, i);
 						break;
@@ -174,6 +198,9 @@ export class Close implements INodeType {
 						break;
 					case 'opportunityStatus':
 						responseData = await executeOpportunityStatusAction.call(this, operation, i);
+						break;
+					case 'integrationLink':
+						responseData = await executeIntegrationLinkAction.call(this, operation, i);
 						break;
 					case 'task':
 						responseData = await executeTaskAction.call(this, operation, i);
