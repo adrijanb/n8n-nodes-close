@@ -8,22 +8,30 @@ import {
 } from 'n8n-workflow';
 
 // Import action handlers
-import { executeLeadAction } from './actions/lead';
-import { executeContactAction } from './actions/contact';
-import { executeActivityAction } from './actions/activity';
-import { executeMeetingSearchAction } from './actions/meetingSearch';
-import { executeOpportunityAction } from './actions/opportunity';
-import { executeTaskAction } from './actions/task';
-import { executeUserAction } from './actions/user';
-import { executeTemplateAction } from './actions/template';
-import { executeCustomFieldAction } from './actions/customField';
+import { executeLeadAction } from './actions/lead.execute';
+import { executeContactAction } from './actions/contact.execute';
+import { executeActivityAction } from './actions/activity.execute';
+import { executeMeetingSearchAction } from './actions/meetingSearch.execute';
+import { executeOpportunityAction } from './actions/opportunity.execute';
+import { executeOpportunityStatusAction } from './actions/opportunityStatus.execute';
+import { executeTaskAction } from './actions/task.execute';
+import { executeUserAction } from './actions/user.execute';
+import { executeTemplateAction } from './actions/template.execute';
+import { executeCustomFieldAction } from './actions/customField.execute';
 
 // Import descriptions
 import { leadOperations, leadFields } from './descriptions/LeadDescription';
 import { contactOperations, contactFields } from './descriptions/ContactDescription';
 import { activityOperations, activityFields } from './descriptions/ActivityDescription';
-import { meetingSearchOperations, meetingSearchFields } from './descriptions/MeetingSearchDescription';
+import {
+	meetingSearchOperations,
+	meetingSearchFields,
+} from './descriptions/MeetingSearchDescription';
 import { opportunityOperations, opportunityFields } from './descriptions/OpportunityDescription';
+import {
+	opportunityStatusOperations,
+	opportunityStatusFields,
+} from './descriptions/OpportunityStatusDescription';
 import { taskOperations, taskFields } from './descriptions/TaskDescription';
 import { userOperations, userFields } from './descriptions/UserDescription';
 import { templateOperations, templateFields } from './descriptions/TemplateDescription';
@@ -83,6 +91,11 @@ export class Close implements INodeType {
 						description: 'Operations on opportunities',
 					},
 					{
+						name: 'Opportunity Status',
+						value: 'opportunityStatus',
+						description: 'Operations on opportunity statuses',
+					},
+					{
 						name: 'Task',
 						value: 'task',
 						description: 'Operations on tasks',
@@ -112,6 +125,7 @@ export class Close implements INodeType {
 			...activityOperations,
 			...meetingSearchOperations,
 			...opportunityOperations,
+			...opportunityStatusOperations,
 			...taskOperations,
 			...userOperations,
 			...templateOperations,
@@ -123,6 +137,7 @@ export class Close implements INodeType {
 			...activityFields,
 			...meetingSearchFields,
 			...opportunityFields,
+			...opportunityStatusFields,
 			...taskFields,
 			...userFields,
 			...templateFields,
@@ -157,6 +172,9 @@ export class Close implements INodeType {
 					case 'opportunity':
 						responseData = await executeOpportunityAction.call(this, operation, i);
 						break;
+					case 'opportunityStatus':
+						responseData = await executeOpportunityStatusAction.call(this, operation, i);
+						break;
 					case 'task':
 						responseData = await executeTaskAction.call(this, operation, i);
 						break;
@@ -170,9 +188,13 @@ export class Close implements INodeType {
 						responseData = await executeCustomFieldAction.call(this, operation, i);
 						break;
 					default:
-						throw new NodeOperationError(this.getNode(), `The resource "${resource}" is not known!`, {
-							itemIndex: i,
-						});
+						throw new NodeOperationError(
+							this.getNode(),
+							`The resource "${resource}" is not known!`,
+							{
+								itemIndex: i,
+							},
+						);
 				}
 
 				returnData.push(...responseData);
