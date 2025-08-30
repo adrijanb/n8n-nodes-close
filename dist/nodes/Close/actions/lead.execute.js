@@ -45,20 +45,12 @@ async function createLead(httpClient, i) {
     // Custom fields
     if (additionalFields.customFields && additionalFields.customFields.customField) {
         const customFields = additionalFields.customFields.customField;
-        console.log('DEBUG: Custom fields data:', JSON.stringify(customFields, null, 2));
         for (const field of customFields) {
             if (field.fieldId && field.value !== undefined && field.value !== '') {
                 const customFieldKey = `custom.${field.fieldId}`;
-                console.log(`DEBUG: Setting custom field ${customFieldKey} = ${field.value}`);
                 body[customFieldKey] = field.value;
             }
-            else {
-                console.log(`DEBUG: Skipping field:`, field);
-            }
         }
-    }
-    else {
-        console.log('DEBUG: No custom fields found in additionalFields:', JSON.stringify(additionalFields, null, 2));
     }
     // Addresses (now separate main field)
     const addresses = this.getNodeParameter('addresses', i, {});
@@ -88,7 +80,6 @@ async function createLead(httpClient, i) {
             return processedContact;
         });
     }
-    console.log('DEBUG: Final body being sent to Close.com:', JSON.stringify(body, null, 2));
     const response = await httpClient.makeRequest('POST', '/lead/', body);
     return [{ json: response }];
 }
@@ -105,17 +96,36 @@ async function getLead(httpClient, i) {
 async function getAllLeads(httpClient, paginator, i) {
     const returnAll = this.getNodeParameter('returnAll', i);
     const limit = this.getNodeParameter('limit', i, 50);
+    const query = this.getNodeParameter('query', i, '{}');
+    const orderBy = this.getNodeParameter('orderBy', i, '');
     const additionalFields = this.getNodeParameter('additionalFields', i);
     const qs = {};
-    // Filter options
-    if (additionalFields.query) {
-        qs.query = additionalFields.query;
+    // Query (JSON format)
+    if (query && query !== '{}') {
+        try {
+            const queryObj = JSON.parse(query);
+            // Convert JSON query to Close.com query format
+            const queryParts = [];
+            for (const [key, value] of Object.entries(queryObj)) {
+                if (value !== null && value !== undefined && value !== '') {
+                    queryParts.push(`${key}:"${value}"`);
+                }
+            }
+            if (queryParts.length > 0) {
+                qs.query = queryParts.join(' AND ');
+            }
+        }
+        catch (error) {
+            throw new Error(`Invalid JSON in query field: ${error}`);
+        }
     }
+    // Order By
+    if (orderBy) {
+        qs._order_by = orderBy;
+    }
+    // Additional fields
     if (additionalFields.fields) {
         qs._fields = additionalFields.fields;
-    }
-    if (additionalFields.orderBy) {
-        qs._order_by = additionalFields.orderBy;
     }
     const response = await paginator.getAll('/lead/', { returnAll, limit }, qs);
     return response.map((item) => ({ json: item }));

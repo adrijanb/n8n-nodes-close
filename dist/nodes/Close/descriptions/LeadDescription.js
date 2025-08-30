@@ -447,6 +447,66 @@ exports.leadFields = [
         description: 'Max number of results to return',
     },
     {
+        displayName: 'Query',
+        name: 'query',
+        type: 'json',
+        displayOptions: {
+            show: {
+                resource: ['lead'],
+                operation: ['getAll'],
+            },
+        },
+        default: '{}',
+        description: 'Search query to filter leads in JSON format (e.g., {"status": "new", "name": "acme"})',
+    },
+    {
+        displayName: 'Order By',
+        name: 'orderBy',
+        type: 'options',
+        displayOptions: {
+            show: {
+                resource: ['lead'],
+                operation: ['getAll'],
+            },
+        },
+        options: [
+            {
+                name: 'Name (A-Z)',
+                value: 'name',
+            },
+            {
+                name: 'Name (Z-A)',
+                value: '-name',
+            },
+            {
+                name: 'Created Date (Newest)',
+                value: '-date_created',
+            },
+            {
+                name: 'Created Date (Oldest)',
+                value: 'date_created',
+            },
+            {
+                name: 'Updated Date (Newest)',
+                value: '-date_updated',
+            },
+            {
+                name: 'Updated Date (Oldest)',
+                value: 'date_updated',
+            },
+            {
+                name: 'Status Label (A-Z)',
+                value: 'status_label',
+            },
+            {
+                name: 'Status Label (Z-A)',
+                value: '-status_label',
+            },
+        ],
+        default: '-date_created',
+        description: 'Field to order results by',
+    },
+    {
         displayName: 'Additional Fields',
         name: 'additionalFields',
         type: 'collection',
@@ -460,25 +520,11 @@ exports.leadFields = [
         },
         options: [
             {
-                displayName: 'Query',
-                name: 'query',
-                type: 'string',
-                default: '',
-                description: 'Search query to filter leads (e.g., "status:new", "name:acme")',
-            },
-            {
                 displayName: 'Fields',
                 name: 'fields',
                 type: 'string',
                 default: '',
                 description: 'Comma-separated list of fields to include in response',
-            },
-            {
-                displayName: 'Order By',
-                name: 'orderBy',
-                type: 'string',
-                default: '',
-                description: 'Field to order results by (e.g., "name", "-created")',
             },
         ],
     },
