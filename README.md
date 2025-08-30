@@ -47,70 +47,130 @@ You need to configure Close.com API credentials:
 
 ### 📧 Lead Management
 
-- **Create**: Create new leads
-- **Get**: Retrieve individual leads
-- **Get All**: Get all leads with filter options
-- **Update**: Update lead information
-- **Delete**: Delete leads
+- **Create**: Create new leads with contacts and custom fields
+- **Get**: Retrieve individual leads with full details
+- **Get All**: Get all leads with advanced filtering options
+- **Update**: Update lead information and status
+- **Delete**: Delete leads and associated data
 - **Merge**: Merge two leads together
+
+### 🏷️ Lead Status Management
+
+- **Create**: Create new lead statuses with custom colors
+- **Get**: Retrieve lead status details
+- **Get All**: List all lead statuses
+- **Update**: Update lead status labels and colors
+- **Delete**: Remove lead statuses
 
 ### 👥 Contact Management
 
-- **Create**: Add contacts to leads
-- **Get**: Retrieve contact details
-- **Get All**: Get all contacts with filters
-- **Update**: Edit contact information
-- **Delete**: Remove contacts
+- **Create**: Add contacts to leads with full contact information
+- **Get**: Retrieve contact details and relationships
+- **Get All**: Get all contacts with advanced filters
+- **Update**: Edit contact information and associations
+- **Delete**: Remove contacts from system
 
 ### 📋 Activity Management
 
-- **Create**: Create activities (Call, Email, Meeting, Note, SMS)
-- **Get**: Retrieve activity details
-- **Get All**: Get all activities with filters
-- **Update**: Update activity information
-- **Delete**: Delete activities
+- **Create**: Create activities (Call, Email, Meeting, Note, SMS, WhatsApp)
+- **Get**: Retrieve activity details and metadata
+- **Get All**: Get all activities with comprehensive filters
+- **Update**: Update activity information and status
+- **Delete**: Delete activities and history
+
+### 🔍 Meeting Search
+
+- **Search**: Advanced meeting search with multiple criteria
+- **Filter**: Filter by date, participants, status, and more
 
 ### 💰 Opportunity Management
 
-- **Create**: Create new opportunities
-- **Get**: Retrieve opportunity details
-- **Get All**: Get all opportunities with filters
-- **Update**: Update opportunity status and values
-- **Delete**: Delete opportunities
+- **Create**: Create new opportunities with pipeline assignment
+- **Get**: Retrieve opportunity details and history
+- **Get All**: Get all opportunities with status and pipeline filters
+- **Update**: Update opportunity values, status, and pipeline
+- **Delete**: Delete opportunities and associated data
+
+### 📊 Opportunity Status Management
+
+- **Create**: Create opportunity statuses (active/won/lost)
+- **Get**: Retrieve opportunity status details
+- **Get All**: List all opportunity statuses with pipeline info
+- **Update**: Update opportunity status labels
+- **Delete**: Remove opportunity statuses
+
+### 🔗 Integration Link Management
+
+- **Create**: Create integration links for external systems
+- **Get**: Retrieve integration link details
+- **Get All**: List all integration links with type filters
+- **Update**: Update link URLs and configurations
+- **Delete**: Remove integration links
+
+### 🔍 Smart View Management
+
+- **Create**: Create smart views (saved searches) for leads/contacts
+- **Get**: Retrieve smart view configurations
+- **Get All**: List all smart views with type filters
+- **Update**: Update smart view queries and sharing settings
+- **Delete**: Remove smart views
+
+### 💬 Comment Management
+
+- **Create**: Create comments on any Close.com object
+- **Get**: Retrieve individual comments
+- **Get All**: Get comments by object or thread with filters
+- **Get Thread**: Retrieve comment threads
+- **Get All Threads**: List comment threads with filters
+- **Update**: Edit comment content (own comments only)
+- **Delete**: Remove comments (preserves thread structure)
+
+### 🔄 Pipeline Management
+
+- **Create**: Create pipelines for organizing opportunity statuses
+- **Get**: Retrieve pipeline details and status organization
+- **Get All**: List all pipelines in organization
+- **Update**: Reorder statuses, rename pipelines, move statuses between pipelines
+- **Delete**: Remove empty pipelines (must have no statuses)
+
+### 📧 Email Template Management
+
+- **Create**: Create email templates with HTML/text content
+- **Get**: Retrieve email template details
+- **Get All**: List templates with archive filtering
+- **Update**: Edit template content, sharing, and archive status
+- **Delete**: Remove email templates
+- **Render**: Render templates with dynamic content for specific leads/contacts or search queries
 
 ### ✅ Task Management
 
-- **Create**: Create and assign tasks
-- **Get**: Retrieve task details
-- **Get All**: Get all tasks with filters
-- **Update**: Update task status and details
-- **Delete**: Delete tasks
+- **Create**: Create and assign tasks with due dates
+- **Get**: Retrieve task details and assignments
+- **Get All**: Get all tasks with status and assignment filters
+- **Update**: Update task status, assignments, and details
+- **Delete**: Delete tasks and history
 
 ### 👤 User Management
 
-- **Get**: Retrieve user details
-- **Get All**: List all team members
-- **Get Me**: Get current user information
+- **Get**: Retrieve user details and permissions
+- **Get All**: List all team members and roles
+- **Get Me**: Get current user information and settings
 
-### 📄 Template Management
+### 📄 Template Management (General)
 
-- **Create**: Create email/SMS templates
-- **Get**: Retrieve template details
-- **Get All**: List all templates
-- **Update**: Edit templates
+- **Create**: Create general templates for various purposes
+- **Get**: Retrieve template details and content
+- **Get All**: List all templates with type filters
+- **Update**: Edit template content and settings
 - **Delete**: Delete templates
 
 ### 🔧 Custom Field Management
 
-- **Create**: Create custom fields
-- **Get**: Retrieve custom field details
-- **Get All**: List all custom fields
-- **Update**: Change custom field configuration
-- **Delete**: Remove custom fields
-
-### 🔍 Meeting Search
-
-- **Search**: Search meetings by various criteria
+- **Create**: Create custom fields for leads, contacts, opportunities, activities
+- **Get**: Retrieve custom field definitions and configurations
+- **Get All**: List all custom fields with type and object filters
+- **Update**: Change custom field configuration and options
+- **Delete**: Remove custom fields (preserves existing data)
 
 ### 🎣 Webhooks & Triggers
 
@@ -178,19 +238,97 @@ The package includes pre-built workflow examples:
 }
 ```
 
-### Activity Creation with Template
+### Create Opportunity Status
 
 ```json
 {
-	"resource": "activity",
+	"resource": "opportunityStatus",
 	"operation": "create",
-	"activityType": "email",
-	"leadId": "lead_123456",
+	"label": "Qualified Lead",
+	"statusType": "active",
 	"additionalFields": {
-		"templateId": "tmpl_123456",
-		"subject": "Welcome to our service",
-		"scheduledTime": "2024-01-15T10:00:00Z"
+		"pipelineId": "pipe_123456"
 	}
+}
+```
+
+### Create Smart View for Lead Filtering
+
+```json
+{
+	"resource": "smartView",
+	"operation": "create",
+	"name": "High Value Prospects",
+	"query": "status:\"Potential\" AND custom_field:\"value\" > 10000",
+	"smartViewType": "lead",
+	"additionalFields": {
+		"shared": true
+	}
+}
+```
+
+### Email Template Creation and Rendering
+
+```json
+{
+	"resource": "emailTemplate",
+	"operation": "create",
+	"name": "Welcome Email",
+	"subject": "Welcome {{lead.name}}!",
+	"bodyHtml": "<h1>Welcome {{lead.name}}!</h1><p>Thank you for your interest in our services.</p>",
+	"additionalFields": {
+		"bodyText": "Welcome {{lead.name}}! Thank you for your interest in our services.",
+		"isShared": true
+	}
+}
+```
+
+### Render Email Template
+
+```json
+{
+	"resource": "emailTemplate",
+	"operation": "render",
+	"templateId": "tmpl_123456",
+	"renderMode": "singleLeadContact",
+	"leadId": "lead_123456",
+	"contactId": "cont_123456"
+}
+```
+
+### Create Pipeline with Status Organization
+
+```json
+{
+	"resource": "pipeline",
+	"operation": "create",
+	"name": "Sales Pipeline",
+	"additionalFields": {
+		"statuses": [{ "id": "stat_123456" }, { "id": "stat_789012" }]
+	}
+}
+```
+
+### Add Comment to Lead
+
+```json
+{
+	"resource": "comment",
+	"operation": "create",
+	"objectId": "lead_123456",
+	"body": "Follow-up call scheduled for next week. Customer showed strong interest in our premium package."
+}
+```
+
+### Create Integration Link
+
+```json
+{
+	"resource": "integrationLink",
+	"operation": "create",
+	"name": "View in Analytics",
+	"url": "https://analytics.company.com/lead/{{lead.id}}",
+	"type": "lead"
 }
 ```
 
@@ -208,6 +346,61 @@ The package includes pre-built workflow examples:
 	}
 }
 ```
+
+## Advanced Features
+
+### 🎯 Smart Views (Saved Searches)
+
+Create and manage saved search queries for leads and contacts:
+
+- **Advanced Filtering Syntax**: Use Close.com's powerful query language
+- **Shared Views**: Share smart views across your organization
+- **Lead & Contact Views**: Separate views for different object types
+- **Dynamic Queries**: Support for date ranges, custom fields, and complex logic
+
+### 🔗 Integration Links
+
+Create dynamic links to external systems:
+
+- **Variable Substitution**: Use `{{lead.id}}`, `{{contact.id}}`, `{{opportunity.id}}`
+- **Multiple Types**: Links for leads, contacts, and opportunities
+- **External Integrations**: Connect to analytics, support, or other CRM systems
+
+### 📧 Email Template Rendering
+
+Advanced email template functionality:
+
+- **Dynamic Content**: Automatic variable replacement with lead/contact data
+- **Two Render Modes**: Single lead/contact or bulk rendering from search queries
+- **HTML & Text**: Support for both HTML and plain text email bodies
+- **Bulk Operations**: Render templates for multiple leads from search results
+
+### 💬 Comment System
+
+Rich commenting system with thread support:
+
+- **Object Comments**: Comment on any Close.com object (leads, contacts, opportunities, etc.)
+- **Thread Management**: Automatic thread creation and management
+- **Rich Text**: Support for formatted text and mentions
+- **Permissions**: Edit own comments, view all accessible comments
+
+### 🔄 Pipeline Management
+
+Organize opportunity statuses into logical workflows:
+
+- **Status Organization**: Group opportunity statuses by team or process
+- **Flexible Management**: Reorder statuses, move between pipelines
+- **Team Workflows**: Separate pipelines for sales, services, support
+- **Status Migration**: Move statuses between pipelines without data loss
+
+### 🏷️ Status Management
+
+Complete control over lead and opportunity statuses:
+
+- **Custom Colors**: Visual differentiation with color coding (lead statuses)
+- **Status Types**: Active, won, lost categories (opportunity statuses)
+- **Pipeline Integration**: Opportunity statuses work with pipeline organization
+- **Lifecycle Management**: Create, update, and remove statuses safely
 
 ## Rate Limiting
 
@@ -259,9 +452,27 @@ npm run build
 
 ## Resources
 
+### Close.com API Documentation
+
 - [Close.com API Documentation](https://developer.close.com/)
+- [Lead Management](https://developer.close.com/resources/leads/)
+- [Contact Management](https://developer.close.com/resources/contacts/)
+- [Activity Management](https://developer.close.com/resources/activities/)
+- [Opportunity Management](https://developer.close.com/resources/opportunities/)
+- [Opportunity Statuses](https://developer.close.com/resources/opportunity-statuses/)
+- [Lead Statuses](https://developer.close.com/resources/lead-statuses/)
+- [Pipelines](https://developer.close.com/resources/pipelines/)
+- [Smart Views](https://developer.close.com/resources/smart-views/)
+- [Comments](https://developer.close.com/resources/comments/)
+- [Integration Links](https://developer.close.com/resources/integration-links/)
+- [Email Templates](https://developer.close.com/resources/email-templates/)
+- [Webhooks Guide](https://developer.close.com/resources/webhook-subscriptions/)
+
+### n8n Documentation
+
 - [n8n Node Development](https://docs.n8n.io/integrations/community-nodes/)
-- [Close.com Webhooks Guide](https://developer.close.com/resources/webhook-subscriptions/)
+- [n8n Community Nodes](https://docs.n8n.io/integrations/community-nodes/installation/)
+- [n8n Workflow Examples](https://docs.n8n.io/workflows/examples/)
 
 ## License
 

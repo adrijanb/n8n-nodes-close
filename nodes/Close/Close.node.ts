@@ -16,6 +16,10 @@ import { executeMeetingSearchAction } from './actions/meetingSearch.execute';
 import { executeOpportunityAction } from './actions/opportunity.execute';
 import { executeOpportunityStatusAction } from './actions/opportunityStatus.execute';
 import { executeIntegrationLinkAction } from './actions/integrationLink.execute';
+import { executeSmartViewAction } from './actions/smartView.execute';
+import { executeCommentAction } from './actions/comment.execute';
+import { executePipelineAction } from './actions/pipeline.execute';
+import { executeEmailTemplateAction } from './actions/emailTemplate.execute';
 import { executeTaskAction } from './actions/task.execute';
 import { executeUserAction } from './actions/user.execute';
 import { executeTemplateAction } from './actions/template.execute';
@@ -39,6 +43,13 @@ import {
 	integrationLinkOperations,
 	integrationLinkFields,
 } from './descriptions/IntegrationLinkDescription';
+import { smartViewOperations, smartViewFields } from './descriptions/SmartViewDescription';
+import { commentOperations, commentFields } from './descriptions/CommentDescription';
+import { pipelineOperations, pipelineFields } from './descriptions/PipelineDescription';
+import {
+	emailTemplateOperations,
+	emailTemplateFields,
+} from './descriptions/EmailTemplateDescription';
 import { taskOperations, taskFields } from './descriptions/TaskDescription';
 import { userOperations, userFields } from './descriptions/UserDescription';
 import { templateOperations, templateFields } from './descriptions/TemplateDescription';
@@ -113,6 +124,26 @@ export class Close implements INodeType {
 						description: 'Operations on integration links',
 					},
 					{
+						name: 'Smart View',
+						value: 'smartView',
+						description: 'Operations on smart views (saved searches)',
+					},
+					{
+						name: 'Comment',
+						value: 'comment',
+						description: 'Operations on comments and comment threads',
+					},
+					{
+						name: 'Pipeline',
+						value: 'pipeline',
+						description: 'Operations on pipelines (opportunity status groups)',
+					},
+					{
+						name: 'Email Template',
+						value: 'emailTemplate',
+						description: 'Operations on email templates',
+					},
+					{
 						name: 'Task',
 						value: 'task',
 						description: 'Operations on tasks',
@@ -145,6 +176,10 @@ export class Close implements INodeType {
 			...opportunityOperations,
 			...opportunityStatusOperations,
 			...integrationLinkOperations,
+			...smartViewOperations,
+			...commentOperations,
+			...pipelineOperations,
+			...emailTemplateOperations,
 			...taskOperations,
 			...userOperations,
 			...templateOperations,
@@ -159,6 +194,10 @@ export class Close implements INodeType {
 			...opportunityFields,
 			...opportunityStatusFields,
 			...integrationLinkFields,
+			...smartViewFields,
+			...commentFields,
+			...pipelineFields,
+			...emailTemplateFields,
 			...taskFields,
 			...userFields,
 			...templateFields,
@@ -201,6 +240,18 @@ export class Close implements INodeType {
 						break;
 					case 'integrationLink':
 						responseData = await executeIntegrationLinkAction.call(this, operation, i);
+						break;
+					case 'smartView':
+						responseData = await executeSmartViewAction.call(this, operation, i);
+						break;
+					case 'comment':
+						responseData = await executeCommentAction.call(this, operation, i);
+						break;
+					case 'pipeline':
+						responseData = await executePipelineAction.call(this, operation, i);
+						break;
+					case 'emailTemplate':
+						responseData = await executeEmailTemplateAction.call(this, operation, i);
 						break;
 					case 'task':
 						responseData = await executeTaskAction.call(this, operation, i);

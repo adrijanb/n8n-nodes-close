@@ -11,6 +11,10 @@ const meetingSearch_execute_1 = require("./actions/meetingSearch.execute");
 const opportunity_execute_1 = require("./actions/opportunity.execute");
 const opportunityStatus_execute_1 = require("./actions/opportunityStatus.execute");
 const integrationLink_execute_1 = require("./actions/integrationLink.execute");
+const smartView_execute_1 = require("./actions/smartView.execute");
+const comment_execute_1 = require("./actions/comment.execute");
+const pipeline_execute_1 = require("./actions/pipeline.execute");
+const emailTemplate_execute_1 = require("./actions/emailTemplate.execute");
 const task_execute_1 = require("./actions/task.execute");
 const user_execute_1 = require("./actions/user.execute");
 const template_execute_1 = require("./actions/template.execute");
@@ -24,6 +28,10 @@ const MeetingSearchDescription_1 = require("./descriptions/MeetingSearchDescript
 const OpportunityDescription_1 = require("./descriptions/OpportunityDescription");
 const OpportunityStatusDescription_1 = require("./descriptions/OpportunityStatusDescription");
 const IntegrationLinkDescription_1 = require("./descriptions/IntegrationLinkDescription");
+const SmartViewDescription_1 = require("./descriptions/SmartViewDescription");
+const CommentDescription_1 = require("./descriptions/CommentDescription");
+const PipelineDescription_1 = require("./descriptions/PipelineDescription");
+const EmailTemplateDescription_1 = require("./descriptions/EmailTemplateDescription");
 const TaskDescription_1 = require("./descriptions/TaskDescription");
 const UserDescription_1 = require("./descriptions/UserDescription");
 const TemplateDescription_1 = require("./descriptions/TemplateDescription");
@@ -98,6 +106,26 @@ class Close {
                             description: 'Operations on integration links',
                         },
                         {
+                            name: 'Smart View',
+                            value: 'smartView',
+                            description: 'Operations on smart views (saved searches)',
+                        },
+                        {
+                            name: 'Comment',
+                            value: 'comment',
+                            description: 'Operations on comments and comment threads',
+                        },
+                        {
+                            name: 'Pipeline',
+                            value: 'pipeline',
+                            description: 'Operations on pipelines (opportunity status groups)',
+                        },
+                        {
+                            name: 'Email Template',
+                            value: 'emailTemplate',
+                            description: 'Operations on email templates',
+                        },
+                        {
                             name: 'Task',
                             value: 'task',
                             description: 'Operations on tasks',
@@ -129,6 +157,10 @@ class Close {
                 ...OpportunityDescription_1.opportunityOperations,
                 ...OpportunityStatusDescription_1.opportunityStatusOperations,
                 ...IntegrationLinkDescription_1.integrationLinkOperations,
+                ...SmartViewDescription_1.smartViewOperations,
+                ...CommentDescription_1.commentOperations,
+                ...PipelineDescription_1.pipelineOperations,
+                ...EmailTemplateDescription_1.emailTemplateOperations,
                 ...TaskDescription_1.taskOperations,
                 ...UserDescription_1.userOperations,
                 ...TemplateDescription_1.templateOperations,
@@ -142,6 +174,10 @@ class Close {
                 ...OpportunityDescription_1.opportunityFields,
                 ...OpportunityStatusDescription_1.opportunityStatusFields,
                 ...IntegrationLinkDescription_1.integrationLinkFields,
+                ...SmartViewDescription_1.smartViewFields,
+                ...CommentDescription_1.commentFields,
+                ...PipelineDescription_1.pipelineFields,
+                ...EmailTemplateDescription_1.emailTemplateFields,
                 ...TaskDescription_1.taskFields,
                 ...UserDescription_1.userFields,
                 ...TemplateDescription_1.templateFields,
@@ -181,6 +217,18 @@ class Close {
                         break;
                     case 'integrationLink':
                         responseData = await integrationLink_execute_1.executeIntegrationLinkAction.call(this, operation, i);
+                        break;
+                    case 'smartView':
+                        responseData = await smartView_execute_1.executeSmartViewAction.call(this, operation, i);
+                        break;
+                    case 'comment':
+                        responseData = await comment_execute_1.executeCommentAction.call(this, operation, i);
+                        break;
+                    case 'pipeline':
+                        responseData = await pipeline_execute_1.executePipelineAction.call(this, operation, i);
+                        break;
+                    case 'emailTemplate':
+                        responseData = await emailTemplate_execute_1.executeEmailTemplateAction.call(this, operation, i);
                         break;
                     case 'task':
                         responseData = await task_execute_1.executeTaskAction.call(this, operation, i);
