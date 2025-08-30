@@ -36,15 +36,15 @@ async function createContact(httpClient, i) {
         body.title = title;
     const additionalFields = this.getNodeParameter('additionalFields', i);
     // Email addresses
-    if (additionalFields.emails) {
-        body.emails = additionalFields.emails.map((email) => ({
+    if (additionalFields.emails && additionalFields.emails.email) {
+        body.emails = additionalFields.emails.email.map((email) => ({
             type: email.type || 'office',
             email: email.email,
         }));
     }
     // Phone numbers
-    if (additionalFields.phones) {
-        body.phones = additionalFields.phones.map((phone) => ({
+    if (additionalFields.phones && additionalFields.phones.phone) {
+        body.phones = additionalFields.phones.phone.map((phone) => ({
             type: phone.type || 'office',
             phone: phone.phone,
         }));
@@ -94,15 +94,15 @@ async function updateContact(httpClient, i) {
     if (updateFields.title !== undefined)
         body.title = updateFields.title;
     // Email addresses
-    if (updateFields.emails) {
-        body.emails = updateFields.emails.map((email) => ({
+    if (updateFields.emails && updateFields.emails.email) {
+        body.emails = updateFields.emails.email.map((email) => ({
             type: email.type || 'office',
             email: email.email,
         }));
     }
     // Phone numbers  
-    if (updateFields.phones) {
-        body.phones = updateFields.phones.map((phone) => ({
+    if (updateFields.phones && updateFields.phones.phone) {
+        body.phones = updateFields.phones.phone.map((phone) => ({
             type: phone.type || 'office',
             phone: phone.phone,
         }));

@@ -3,6 +3,67 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.executeLeadAction = void 0;
 const httpClient_1 = require("../transports/httpClient");
 const paginator_1 = require("../transports/paginator");
+// Cache for custom field metadata to avoid repeated API calls
+let customFieldsCache = null;
+let cacheTimestamp = 0;
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+// Helper function to convert custom fields from Close.com API response to structured array
+async function convertCustomFields(responseData, httpClient) {
+    if (!responseData || typeof responseData !== 'object') {
+        return responseData;
+    }
+    const customFields = [];
+    const result = { ...responseData };
+    const fieldIds = [];
+    // First pass: collect all field IDs and prepare basic structure
+    for (const [key, value] of Object.entries(responseData)) {
+        if (key.startsWith('custom.cf_')) {
+            // Extract the field ID (remove 'custom.' prefix)
+            const fieldId = key.substring(7); // Remove 'custom.' prefix
+            fieldIds.push(fieldId);
+            customFields.push({
+                id: fieldId,
+                name: fieldId,
+                value: value,
+            });
+            // Remove the original custom field property from the result
+            delete result[key];
+        }
+    }
+    // Second pass: fetch real names for the custom fields
+    if (fieldIds.length > 0) {
+        try {
+            // Check if we need to fetch/refresh custom field metadata
+            const now = Date.now();
+            if (!customFieldsCache || now - cacheTimestamp > CACHE_DURATION) {
+                // Fetch custom field metadata from Close.com API
+                const customFieldsResponse = await httpClient.makeRequest('GET', '/custom_field/lead/');
+                const customFieldsMetadata = customFieldsResponse.data || [];
+                // Create a map of field ID to field name and cache it
+                customFieldsCache = {};
+                for (const fieldMeta of customFieldsMetadata) {
+                    if (fieldMeta.id) {
+                        customFieldsCache[fieldMeta.id] = fieldMeta.name || fieldMeta.id;
+                    }
+                }
+                cacheTimestamp = now;
+            }
+            // Update the custom fields with real names from cache
+            for (const customField of customFields) {
+                if (customFieldsCache && customFieldsCache[customField.id]) {
+                    customField.name = customFieldsCache[customField.id];
+                }
+            }
+        }
+        catch (error) {
+            // If fetching metadata fails, keep the field IDs as names
+            console.warn('Could not fetch custom field metadata:', error);
+        }
+    }
+    // Add the structured custom fields array
+    result.customFields = customFields;
+    return result;
+}
 async function executeLeadAction(operation, i) {
     const httpClient = new httpClient_1.CloseHttpClient(this);
     const paginator = new paginator_1.ClosePaginator(httpClient);
@@ -81,7 +142,8 @@ async function createLead(httpClient, i) {
         });
     }
     const response = await httpClient.makeRequest('POST', '/lead/', body);
-    return [{ json: response }];
+    const convertedResponse = await convertCustomFields(response, httpClient);
+    return [{ json: convertedResponse }];
 }
 async function getLead(httpClient, i) {
     const leadId = this.getNodeParameter('leadId', i);
@@ -91,7 +153,8 @@ async function getLead(httpClient, i) {
         qs._fields = additionalFields.fields;
     }
     const response = await httpClient.makeRequest('GET', `/lead/${leadId}/`, undefined, qs);
-    return [{ json: response }];
+    const convertedResponse = await convertCustomFields(response, httpClient);
+    return [{ json: convertedResponse }];
 }
 async function getAllLeads(httpClient, paginator, i) {
     const returnAll = this.getNodeParameter('returnAll', i);
@@ -128,7 +191,9 @@ async function getAllLeads(httpClient, paginator, i) {
         qs._fields = additionalFields.fields;
     }
     const response = await paginator.getAll('/lead/', { returnAll, limit }, qs);
-    return response.map((item) => ({ json: item }));
+    // Convert custom fields for each item
+    const convertedItems = await Promise.all(response.map(async (item) => ({ json: await convertCustomFields(item, httpClient) })));
+    return convertedItems;
 }
 async function updateLead(httpClient, i) {
     const leadId = this.getNodeParameter('leadId', i);
@@ -154,7 +219,8 @@ async function updateLead(httpClient, i) {
         }
     }
     const response = await httpClient.makeRequest('PUT', `/lead/${leadId}/`, body);
-    return [{ json: response }];
+    const convertedResponse = await convertCustomFields(response, httpClient);
+    return [{ json: convertedResponse }];
 }
 async function deleteLead(httpClient, i) {
     const leadId = this.getNodeParameter('leadId', i);
@@ -169,5 +235,6 @@ async function mergeLeads(httpClient, i) {
         destination: destinationId,
     };
     const response = await httpClient.makeRequest('POST', '/lead/merge/', body);
-    return [{ json: response }];
+    const convertedResponse = await convertCustomFields(response, httpClient);
+    return [{ json: convertedResponse }];
 }

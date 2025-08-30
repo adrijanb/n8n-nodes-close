@@ -2,6 +2,77 @@ import { IExecuteFunctions, INodeExecutionData } from 'n8n-workflow';
 import { CloseHttpClient } from '../transports/httpClient';
 import { ClosePaginator } from '../transports/paginator';
 
+// Cache for custom field metadata to avoid repeated API calls
+let customFieldsCache: { [key: string]: string } | null = null;
+let cacheTimestamp: number = 0;
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
+// Helper function to convert custom fields from Close.com API response to structured array
+async function convertCustomFields(responseData: any, httpClient: CloseHttpClient): Promise<any> {
+	if (!responseData || typeof responseData !== 'object') {
+		return responseData;
+	}
+
+	const customFields: any[] = [];
+	const result = { ...responseData };
+	const fieldIds: string[] = [];
+
+	// First pass: collect all field IDs and prepare basic structure
+	for (const [key, value] of Object.entries(responseData)) {
+		if (key.startsWith('custom.cf_')) {
+			// Extract the field ID (remove 'custom.' prefix)
+			const fieldId = key.substring(7); // Remove 'custom.' prefix
+			fieldIds.push(fieldId);
+
+			customFields.push({
+				id: fieldId,
+				name: fieldId, // Temporary, will be replaced with real name
+				value: value,
+			});
+
+			// Remove the original custom field property from the result
+			delete result[key];
+		}
+	}
+
+	// Second pass: fetch real names for the custom fields
+	if (fieldIds.length > 0) {
+		try {
+			// Check if we need to fetch/refresh custom field metadata
+			const now = Date.now();
+			if (!customFieldsCache || now - cacheTimestamp > CACHE_DURATION) {
+				// Fetch custom field metadata from Close.com API
+				const customFieldsResponse = await httpClient.makeRequest('GET', '/custom_field/lead/');
+				const customFieldsMetadata = customFieldsResponse.data || [];
+
+				// Create a map of field ID to field name and cache it
+				customFieldsCache = {};
+				for (const fieldMeta of customFieldsMetadata) {
+					if (fieldMeta.id) {
+						customFieldsCache[fieldMeta.id] = fieldMeta.name || fieldMeta.id;
+					}
+				}
+				cacheTimestamp = now;
+			}
+
+			// Update the custom fields with real names from cache
+			for (const customField of customFields) {
+				if (customFieldsCache && customFieldsCache[customField.id]) {
+					customField.name = customFieldsCache[customField.id];
+				}
+			}
+		} catch (error) {
+			// If fetching metadata fails, keep the field IDs as names
+			console.warn('Could not fetch custom field metadata:', error);
+		}
+	}
+
+	// Add the structured custom fields array
+	result.customFields = customFields;
+
+	return result;
+}
+
 export async function executeLeadAction(
 	this: IExecuteFunctions,
 	operation: string,
@@ -101,8 +172,9 @@ async function createLead(
 	}
 
 	const response = await httpClient.makeRequest('POST', '/lead/', body);
+	const convertedResponse = await convertCustomFields(response, httpClient);
 
-	return [{ json: response }];
+	return [{ json: convertedResponse }];
 }
 
 async function getLead(
@@ -119,8 +191,9 @@ async function getLead(
 	}
 
 	const response = await httpClient.makeRequest('GET', `/lead/${leadId}/`, undefined, qs);
+	const convertedResponse = await convertCustomFields(response, httpClient);
 
-	return [{ json: response }];
+	return [{ json: convertedResponse }];
 }
 
 async function getAllLeads(
@@ -168,7 +241,12 @@ async function getAllLeads(
 
 	const response = await paginator.getAll('/lead/', { returnAll, limit }, qs);
 
-	return response.map((item) => ({ json: item }));
+	// Convert custom fields for each item
+	const convertedItems = await Promise.all(
+		response.map(async (item) => ({ json: await convertCustomFields(item, httpClient) })),
+	);
+
+	return convertedItems;
 }
 
 async function updateLead(
@@ -199,8 +277,9 @@ async function updateLead(
 	}
 
 	const response = await httpClient.makeRequest('PUT', `/lead/${leadId}/`, body);
+	const convertedResponse = await convertCustomFields(response, httpClient);
 
-	return [{ json: response }];
+	return [{ json: convertedResponse }];
 }
 
 async function deleteLead(
@@ -229,6 +308,7 @@ async function mergeLeads(
 	};
 
 	const response = await httpClient.makeRequest('POST', '/lead/merge/', body);
+	const convertedResponse = await convertCustomFields(response, httpClient);
 
-	return [{ json: response }];
+	return [{ json: convertedResponse }];
 }

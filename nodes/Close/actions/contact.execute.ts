@@ -47,16 +47,16 @@ async function createContact(
 	const additionalFields = this.getNodeParameter('additionalFields', i) as any;
 
 	// Email addresses
-	if (additionalFields.emails) {
-		body.emails = additionalFields.emails.map((email: any) => ({
+	if (additionalFields.emails && additionalFields.emails.email) {
+		body.emails = additionalFields.emails.email.map((email: any) => ({
 			type: email.type || 'office',
 			email: email.email,
 		}));
 	}
 
 	// Phone numbers
-	if (additionalFields.phones) {
-		body.phones = additionalFields.phones.map((phone: any) => ({
+	if (additionalFields.phones && additionalFields.phones.phone) {
+		body.phones = additionalFields.phones.phone.map((phone: any) => ({
 			type: phone.type || 'office',
 			phone: phone.phone,
 		}));
@@ -68,7 +68,7 @@ async function createContact(
 	}
 
 	const response = await httpClient.makeRequest('POST', '/contact/', body);
-	
+
 	return [{ json: response }];
 }
 
@@ -86,7 +86,7 @@ async function getContact(
 	}
 
 	const response = await httpClient.makeRequest('GET', `/contact/${contactId}/`, undefined, qs);
-	
+
 	return [{ json: response }];
 }
 
@@ -115,7 +115,7 @@ async function getAllContacts(
 
 	const response = await paginator.getAll('/contact/', { returnAll, limit }, qs);
 
-	return response.map(item => ({ json: item }));
+	return response.map((item) => ({ json: item }));
 }
 
 async function updateContact(
@@ -133,16 +133,16 @@ async function updateContact(
 	if (updateFields.title !== undefined) body.title = updateFields.title;
 
 	// Email addresses
-	if (updateFields.emails) {
-		body.emails = updateFields.emails.map((email: any) => ({
+	if (updateFields.emails && updateFields.emails.email) {
+		body.emails = updateFields.emails.email.map((email: any) => ({
 			type: email.type || 'office',
 			email: email.email,
 		}));
 	}
 
-	// Phone numbers  
-	if (updateFields.phones) {
-		body.phones = updateFields.phones.map((phone: any) => ({
+	// Phone numbers
+	if (updateFields.phones && updateFields.phones.phone) {
+		body.phones = updateFields.phones.phone.map((phone: any) => ({
 			type: phone.type || 'office',
 			phone: phone.phone,
 		}));
@@ -154,7 +154,7 @@ async function updateContact(
 	}
 
 	const response = await httpClient.makeRequest('PUT', `/contact/${contactId}/`, body);
-	
+
 	return [{ json: response }];
 }
 
@@ -166,6 +166,6 @@ async function deleteContact(
 	const contactId = this.getNodeParameter('contactId', i) as string;
 
 	await httpClient.makeRequest('DELETE', `/contact/${contactId}/`);
-	
+
 	return [{ json: { success: true, id: contactId } }];
 }
