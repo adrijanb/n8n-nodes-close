@@ -1,0 +1,43 @@
+# Source files - only include built dist folder
+nodes/
+credentials/
+test/
+examples/
+
+# Development files
+*.ts
+!*.d.ts
+tsconfig.json
+jest.config.js
+gulpfile.js
+.eslintrc.js
+.prettierrc
+
+# Documentation and examples
+README.md
+FEATURES.md
+LICENSE
+
+# Git and development
+.git/
+.gitignore
+.github/
+
+# Node modules and logs
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Test coverage
+coverage/

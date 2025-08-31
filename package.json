@@ -6,14 +6,14 @@
 		"n8n-community-node-package"
 	],
 	"license": "MIT",
-	"homepage": "",
+	"homepage": "https://github.com/adrijanbajrami/n8n-nodes-close#readme",
 	"author": {
-		"name": "",
-		"email": ""
+		"name": "Adrijan Bajrami",
+		"email": "adrijan.bajrami@everhype.de"
 	},
 	"repository": {
 		"type": "git",
-		"url": ""
+		"url": "https://github.com/adrijanbajrami/n8n-nodes-close.git"
 	},
 	"main": "index.js",
 	"scripts": {
