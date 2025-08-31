@@ -33,7 +33,7 @@ async function createActivity(
 ): Promise<INodeExecutionData[]> {
 	const activityType = this.getNodeParameter('activityType', i) as string;
 	const leadId = this.getNodeParameter('leadId', i) as string;
-	
+
 	const body: any = {
 		lead_id: leadId,
 	};
@@ -95,7 +95,7 @@ async function createEmailActivity(
 	body.direction = direction;
 	body.subject = subject;
 	body.to = to;
-	
+
 	if (bodyText) body.body_text = bodyText;
 	if (bodyHtml) body.body_html = bodyHtml;
 
@@ -105,7 +105,7 @@ async function createEmailActivity(
 	if (additionalFields.bcc) body.bcc = additionalFields.bcc;
 	if (additionalFields.sender) body.sender = additionalFields.sender;
 	if (additionalFields.templateId) body.template_id = additionalFields.templateId;
-	
+
 	// Schedule email if specified
 	if (additionalFields.sendLater && additionalFields.sendAt) {
 		body.send_as_user_id = additionalFields.userId;
@@ -131,7 +131,7 @@ async function createMeetingActivity(
 	body.title = title;
 	body.starts_at = startsAt;
 	body.ends_at = endsAt;
-	
+
 	if (note) body.note = note;
 
 	if (additionalFields.contactId) body.contact_id = additionalFields.contactId;
@@ -149,10 +149,17 @@ async function createNoteActivity(
 	body: any,
 	i: number,
 ): Promise<INodeExecutionData[]> {
-	const note = this.getNodeParameter('note', i) as string;
+	const useHtml = this.getNodeParameter('useHtml', i, false) as boolean;
 	const additionalFields = this.getNodeParameter('additionalFields', i) as any;
 
-	body.note = note;
+	// Use either note or note_html based on checkbox
+	if (useHtml) {
+		const noteHtml = this.getNodeParameter('noteHtml', i) as string;
+		body.note_html = noteHtml;
+	} else {
+		const note = this.getNodeParameter('note', i) as string;
+		body.note = note;
+	}
 
 	if (additionalFields.contactId) body.contact_id = additionalFields.contactId;
 	if (additionalFields.userId) body.user_id = additionalFields.userId;
@@ -200,8 +207,13 @@ async function getActivity(
 		qs._fields = additionalFields.fields;
 	}
 
-	const response = await httpClient.makeRequest('GET', `/activity/${activityType}/${activityId}/`, undefined, qs);
-	
+	const response = await httpClient.makeRequest(
+		'GET',
+		`/activity/${activityType}/${activityId}/`,
+		undefined,
+		qs,
+	);
+
 	return [{ json: response }];
 }
 
@@ -238,7 +250,7 @@ async function getAllActivities(
 	const endpoint = activityType === 'all' ? '/activity/' : `/activity/${activityType}/`;
 	const response = await paginator.getAll(endpoint, { returnAll, limit }, qs);
 
-	return response.map(item => ({ json: item }));
+	return response.map((item) => ({ json: item }));
 }
 
 async function updateActivity(
@@ -278,8 +290,12 @@ async function updateActivity(
 			break;
 	}
 
-	const response = await httpClient.makeRequest('PUT', `/activity/${activityType}/${activityId}/`, body);
-	
+	const response = await httpClient.makeRequest(
+		'PUT',
+		`/activity/${activityType}/${activityId}/`,
+		body,
+	);
+
 	return [{ json: response }];
 }
 
@@ -292,6 +308,6 @@ async function deleteActivity(
 	const activityId = this.getNodeParameter('activityId', i) as string;
 
 	await httpClient.makeRequest('DELETE', `/activity/${activityType}/${activityId}/`);
-	
+
 	return [{ json: { success: true, id: activityId } }];
 }

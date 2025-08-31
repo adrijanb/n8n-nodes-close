@@ -122,9 +122,17 @@ async function createMeetingActivity(httpClient, body, i) {
     return [{ json: response }];
 }
 async function createNoteActivity(httpClient, body, i) {
-    const note = this.getNodeParameter('note', i);
+    const useHtml = this.getNodeParameter('useHtml', i, false);
     const additionalFields = this.getNodeParameter('additionalFields', i);
-    body.note = note;
+    // Use either note or note_html based on checkbox
+    if (useHtml) {
+        const noteHtml = this.getNodeParameter('noteHtml', i);
+        body.note_html = noteHtml;
+    }
+    else {
+        const note = this.getNodeParameter('note', i);
+        body.note = note;
+    }
     if (additionalFields.contactId)
         body.contact_id = additionalFields.contactId;
     if (additionalFields.userId)

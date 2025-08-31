@@ -164,6 +164,20 @@ exports.activityFields = [
         description: 'The phone number that was called',
     },
     {
+        displayName: 'Use HTML',
+        name: 'useHtml',
+        type: 'boolean',
+        displayOptions: {
+            show: {
+                resource: ['activity'],
+                operation: ['create'],
+                activityType: ['note'],
+            },
+        },
+        default: false,
+        description: 'Whether to use HTML formatting for the note content',
+    },
+    {
         displayName: 'Note',
         name: 'note',
         type: 'string',
@@ -172,10 +186,40 @@ exports.activityFields = [
                 resource: ['activity'],
                 operation: ['create'],
                 activityType: ['call', 'note'],
+                useHtml: [false],
             },
         },
         default: '',
-        description: 'Notes about the call or note content',
+        description: 'Plain text content of the note',
+    },
+    {
+        displayName: 'Note',
+        name: 'note',
+        type: 'string',
+        displayOptions: {
+            show: {
+                resource: ['activity'],
+                operation: ['create'],
+                activityType: ['call'],
+            },
+        },
+        default: '',
+        description: 'Notes about the call',
+    },
+    {
+        displayName: 'Note HTML',
+        name: 'noteHtml',
+        type: 'string',
+        displayOptions: {
+            show: {
+                resource: ['activity'],
+                operation: ['create'],
+                activityType: ['note'],
+                useHtml: [true],
+            },
+        },
+        default: '',
+        description: 'HTML formatted content of the note (e.g., "<p><strong>Important:</strong> Follow up required</p>")',
     },
     {
         displayName: 'Duration (seconds)',
