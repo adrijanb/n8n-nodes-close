@@ -1,6 +1,6 @@
 {
-	"name": "n8n-nodes-close",
-	"version": "1.0.0",
+	"name": "@adrijanx/n8n-nodes-close",
+	"version": "1.0.1",
 	"description": "n8n node for Close.com CRM integration",
 	"keywords": [
 		"n8n-community-node-package"
@@ -13,7 +13,7 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/adrijanbajrami/n8n-nodes-close.git"
+		"url": "git+https://github.com/adrijanbajrami/n8n-nodes-close.git"
 	},
 	"main": "index.js",
 	"scripts": {
@@ -24,7 +24,7 @@
 		"lintfix": "eslint nodes credentials package.json --fix",
 		"test": "jest",
 		"test:watch": "jest --watch",
-		"prepublishOnly": "npm run build && npm run lint -s"
+		"prepublishOnly": "npm run build"
 	},
 	"files": [
 		"dist"

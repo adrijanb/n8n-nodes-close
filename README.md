@@ -1,4 +1,4 @@
-# n8n-nodes-close
+# @adrijanx/n8n-nodes-close
 
 ![Banner Image](https://raw.githubusercontent.com/n8n-io/n8n/master/assets/n8n-logo.png)
 
@@ -12,7 +12,7 @@ You have three options to install this node package.
 
 1. Open n8n and go to **Settings > Community Nodes**
 2. Select **Install**
-3. Enter `n8n-nodes-close` and click **Install**
+3. Enter `@adrijanx/n8n-nodes-close` and click **Install**
 4. Accept the risks of installing community nodes
 5. Select **Install** and wait for the node to be installed
 
@@ -22,13 +22,13 @@ For self-hosted instances:
 
 ```bash
 cd ~/.n8n/nodes
-npm install n8n-nodes-close
+npm install @adrijanx/n8n-nodes-close
 ```
 
 ### Manual Installation
 
 1. Download the latest release
-2. Extract the files to `~/.n8n/nodes/n8n-nodes-close/`
+2. Extract the files to `~/.n8n/nodes/@adrijanx/n8n-nodes-close/`
 3. Restart n8n
 
 ## Credentials
