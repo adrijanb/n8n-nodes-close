@@ -237,11 +237,34 @@ export class Close implements INodeType {
 					const response = await httpClient.makeRequest('GET', '/custom_field/lead/');
 					const fields = response.data || [];
 
-					return fields.map((field: any) => ({
-						name: field.name || field.id,
-						value: field.id,
-						description: `${field.name} (${field.type}) - ${field.id}`,
-					}));
+					return fields
+						.filter((field: any) => field.type !== 'user') // Exclude user fields
+						.map((field: any) => ({
+							name: field.name || field.id,
+							value: field.id,
+							description: `${field.name} (${field.type}) - ${field.id}`,
+						}));
+				} catch (error) {
+					return [];
+				}
+			},
+
+			// Load User-Type Custom Fields for Leads
+			async getLeadUserCustomFields(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				const { CloseHttpClient } = await import('./transports/httpClient');
+				const httpClient = new CloseHttpClient(this);
+
+				try {
+					const response = await httpClient.makeRequest('GET', '/custom_field/lead/');
+					const fields = response.data || [];
+
+					return fields
+						.filter((field: any) => field.type === 'user') // Only user fields
+						.map((field: any) => ({
+							name: field.name || field.id,
+							value: field.id,
+							description: `${field.name} (User Field) - ${field.id}`,
+						}));
 				} catch (error) {
 					return [];
 				}
@@ -300,6 +323,24 @@ export class Close implements INodeType {
 						name: status.label || status.id,
 						value: status.id,
 						description: `${status.label} (${status.id})`,
+					}));
+				} catch (error) {
+					return [];
+				}
+			},
+
+			async getUsers(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				const { CloseHttpClient } = await import('./transports/httpClient');
+				const httpClient = new CloseHttpClient(this);
+
+				try {
+					const response = await httpClient.makeRequest('GET', '/user/');
+					const users = response.data || [];
+
+					return users.map((user: any) => ({
+						name: `${user.first_name} ${user.last_name}`.trim() || user.email || user.id,
+						value: user.id,
+						description: `${user.first_name} ${user.last_name} (${user.email})`.trim(),
 					}));
 				} catch (error) {
 					return [];

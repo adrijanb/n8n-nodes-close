@@ -291,9 +291,9 @@ exports.contactFields = [
             {
                 displayName: 'Query',
                 name: 'query',
-                type: 'string',
-                default: '',
-                description: 'Search query to filter contacts',
+                type: 'json',
+                default: '{}',
+                description: 'Search query to filter contacts in JSON format (e.g., {"name": "John", "email": "john@company.com"})',
             },
             {
                 displayName: 'Fields',

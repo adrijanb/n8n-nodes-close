@@ -71,9 +71,10 @@ export const meetingSearchFields: INodeProperties[] = [
 			{
 				displayName: 'Query',
 				name: 'query',
-				type: 'string',
-				default: '',
-				description: 'Search query to filter meetings',
+				type: 'json',
+				default: '{}',
+				description:
+					'Search query to filter meetings in JSON format (e.g., {"title": "standup", "date__gte": "2024-01-01"})',
 			},
 			{
 				displayName: 'User ID',

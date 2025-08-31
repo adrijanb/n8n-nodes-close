@@ -113,6 +113,16 @@ async function createLead(httpClient, i) {
             }
         }
     }
+    // User Custom fields
+    if (additionalFields.userCustomFields && additionalFields.userCustomFields.userCustomField) {
+        const userCustomFields = additionalFields.userCustomFields.userCustomField;
+        for (const field of userCustomFields) {
+            if (field.fieldId && field.value !== undefined && field.value !== '') {
+                const customFieldKey = `custom.${field.fieldId}`;
+                body[customFieldKey] = field.value;
+            }
+        }
+    }
     // Addresses (now separate main field)
     const addresses = this.getNodeParameter('addresses', i, {});
     if (addresses && addresses.address) {
@@ -212,6 +222,16 @@ async function updateLead(httpClient, i) {
     if (updateFields.customFields && updateFields.customFields.customField) {
         const customFields = updateFields.customFields.customField;
         for (const field of customFields) {
+            if (field.fieldId && field.value !== undefined && field.value !== '') {
+                const customFieldKey = `custom.${field.fieldId}`;
+                body[customFieldKey] = field.value;
+            }
+        }
+    }
+    // User Custom fields
+    if (updateFields.userCustomFields && updateFields.userCustomFields.userCustomField) {
+        const userCustomFields = updateFields.userCustomFields.userCustomField;
+        for (const field of userCustomFields) {
             if (field.fieldId && field.value !== undefined && field.value !== '') {
                 const customFieldKey = `custom.${field.fieldId}`;
                 body[customFieldKey] = field.value;

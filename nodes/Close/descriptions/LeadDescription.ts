@@ -153,6 +153,44 @@ export const leadFields: INodeProperties[] = [
 					},
 				],
 			},
+			{
+				displayName: 'User Custom Fields',
+				name: 'userCustomFields',
+				type: 'fixedCollection',
+				default: {},
+				description: 'User-type custom fields to set on the lead',
+				typeOptions: {
+					multipleValues: true,
+				},
+				options: [
+					{
+						name: 'userCustomField',
+						displayName: 'User Custom Field',
+						values: [
+							{
+								displayName: 'Field',
+								name: 'fieldId',
+								type: 'options',
+								typeOptions: {
+									loadOptionsMethod: 'getLeadUserCustomFields',
+								},
+								default: '',
+								description: 'The user custom field to set',
+							},
+							{
+								displayName: 'User',
+								name: 'value',
+								type: 'options',
+								typeOptions: {
+									loadOptionsMethod: 'getUsers',
+								},
+								default: '',
+								description: 'The user to assign to this field',
+							},
+						],
+					},
+				],
+			},
 		],
 	},
 
@@ -461,7 +499,8 @@ export const leadFields: INodeProperties[] = [
 			},
 		},
 		default: '{}',
-		description: 'Search query to filter leads in JSON format (e.g., {"status": "new", "name": "acme"})',
+		description:
+			'Search query to filter leads in JSON format (e.g., {"status": "new", "name": "acme"})',
 	},
 	{
 		displayName: 'Order By',
@@ -608,6 +647,44 @@ export const leadFields: INodeProperties[] = [
 								type: 'string',
 								default: '',
 								description: 'The value for the custom field',
+							},
+						],
+					},
+				],
+			},
+			{
+				displayName: 'User Custom Fields',
+				name: 'userCustomFields',
+				type: 'fixedCollection',
+				default: {},
+				description: 'User-type custom fields to update on the lead',
+				typeOptions: {
+					multipleValues: true,
+				},
+				options: [
+					{
+						name: 'userCustomField',
+						displayName: 'User Custom Field',
+						values: [
+							{
+								displayName: 'Field',
+								name: 'fieldId',
+								type: 'options',
+								typeOptions: {
+									loadOptionsMethod: 'getLeadUserCustomFields',
+								},
+								default: '',
+								description: 'The user custom field to update',
+							},
+							{
+								displayName: 'User',
+								name: 'value',
+								type: 'options',
+								typeOptions: {
+									loadOptionsMethod: 'getUsers',
+								},
+								default: '',
+								description: 'The user to assign to this field',
 							},
 						],
 					},

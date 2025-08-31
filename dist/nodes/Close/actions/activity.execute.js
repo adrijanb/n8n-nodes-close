@@ -25,9 +25,21 @@ exports.executeActivityAction = executeActivityAction;
 async function createActivity(httpClient, i) {
     const activityType = this.getNodeParameter('activityType', i);
     const leadId = this.getNodeParameter('leadId', i);
+    // Validate required fields
+    if (!leadId || leadId.trim() === '') {
+        throw new Error('Lead ID is required for creating activities');
+    }
+    if (!activityType || activityType.trim() === '') {
+        throw new Error('Activity type is required');
+    }
     const body = {
         lead_id: leadId,
     };
+    console.log('=== ACTIVITY CREATION DEBUG ===');
+    console.log('Activity Type:', activityType);
+    console.log('Lead ID:', leadId);
+    console.log('Initial Body:', JSON.stringify(body, null, 2));
+    console.log('=== END ACTIVITY DEBUG ===');
     switch (activityType) {
         case 'call':
             return await createCallActivity.call(this, httpClient, body, i);
@@ -40,7 +52,7 @@ async function createActivity(httpClient, i) {
         case 'sms':
             return await createSmsActivity.call(this, httpClient, body, i);
         default:
-            throw new Error(`Unknown activity type: ${activityType}`);
+            throw new Error(`Unknown activity type: ${activityType}. Supported types: call, email, meeting, note, sms`);
     }
 }
 async function createCallActivity(httpClient, body, i) {
@@ -60,6 +72,7 @@ async function createCallActivity(httpClient, body, i) {
         body.contact_id = additionalFields.contactId;
     if (additionalFields.userId)
         body.user_id = additionalFields.userId;
+    // Set date_created only if explicitly specified by user
     if (additionalFields.dateCreated)
         body.date_created = additionalFields.dateCreated;
     const response = await httpClient.makeRequest('POST', '/activity/call/', body);
@@ -71,14 +84,21 @@ async function createEmailActivity(httpClient, body, i) {
     const bodyText = this.getNodeParameter('bodyText', i, '');
     const bodyHtml = this.getNodeParameter('bodyHtml', i, '');
     const to = this.getNodeParameter('to', i);
+    const emailStatus = this.getNodeParameter('emailStatus', i, 'outbox');
+    const scheduledDate = this.getNodeParameter('scheduledDate', i, '');
     const additionalFields = this.getNodeParameter('additionalFields', i);
     body.direction = direction;
     body.subject = subject;
     body.to = to;
+    body.status = emailStatus;
     if (bodyText)
         body.body_text = bodyText;
     if (bodyHtml)
         body.body_html = bodyHtml;
+    // Set scheduled date if status is scheduled
+    if (emailStatus === 'scheduled' && scheduledDate) {
+        body.date_scheduled = scheduledDate;
+    }
     if (additionalFields.contactId)
         body.contact_id = additionalFields.contactId;
     if (additionalFields.userId)
@@ -91,11 +111,6 @@ async function createEmailActivity(httpClient, body, i) {
         body.sender = additionalFields.sender;
     if (additionalFields.templateId)
         body.template_id = additionalFields.templateId;
-    // Schedule email if specified
-    if (additionalFields.sendLater && additionalFields.sendAt) {
-        body.send_as_user_id = additionalFields.userId;
-        body.date_scheduled = additionalFields.sendAt;
-    }
     const response = await httpClient.makeRequest('POST', '/activity/email/', body);
     return [{ json: response }];
 }
@@ -121,22 +136,84 @@ async function createMeetingActivity(httpClient, body, i) {
     const response = await httpClient.makeRequest('POST', '/activity/meeting/', body);
     return [{ json: response }];
 }
+// Helper function to sanitize HTML for Close.com API
+function sanitizeHtmlForClose(html) {
+    if (!html)
+        return html;
+    // Close.com expects well-formed HTML with specific formatting
+    // Based on Close.com documentation: supports subset of HTML for rich-text content
+    let sanitized = html.trim();
+    // Step 1: Normalize all line breaks to <br> (Close.com prefers <br> over <br/>)
+    sanitized = sanitized.replace(/<br\s*\/?>/gi, '<br>');
+    // Step 2: Remove multiple consecutive <br> tags - this is the key issue!
+    // Replace multiple <br> tags with single <br>
+    sanitized = sanitized.replace(/(<br>\s*){2,}/gi, '<br>');
+    // Step 3: Remove any trailing <br> tags that might cause "extra content" errors
+    sanitized = sanitized.replace(/(<br>\s*)+$/gi, '');
+    // Step 4: Remove any leading <br> tags
+    sanitized = sanitized.replace(/^(\s*<br>\s*)+/gi, '');
+    // Step 5: Ensure proper paragraph structure if using <p> tags
+    sanitized = sanitized.replace(/<p>\s*<\/p>/gi, '');
+    // Step 6: Remove any extra whitespace between tags that could cause parsing issues
+    sanitized = sanitized.replace(/>\s+</g, '><');
+    // Step 7: Ensure proper closing of common tags
+    sanitized = sanitized.replace(/<(b|i|u|strong|em)([^>]*)>([^<]*)<\/\1>/gi, '<$1$2>$3</$1>');
+    // Step 8: Remove any HTML comments that might cause issues
+    sanitized = sanitized.replace(/<!--[\s\S]*?-->/g, '');
+    // Step 9: Final cleanup - ensure the HTML doesn't end with whitespace or extra content
+    sanitized = sanitized.trim();
+    // Step 10: Special handling for Close.com - ensure content ends properly
+    // If the content ends with a tag, make sure there's no trailing whitespace
+    if (sanitized.endsWith('>')) {
+        // Content ends with a tag, this is good
+    }
+    else {
+        // Content ends with text, this is also good
+        // But make sure there's no trailing whitespace after text
+        sanitized = sanitized.replace(/\s+$/, '');
+    }
+    console.log('=== HTML SANITIZATION ===');
+    console.log('Original HTML:', JSON.stringify(html));
+    console.log('Sanitized HTML:', JSON.stringify(sanitized));
+    console.log('Length change:', html.length, '->', sanitized.length);
+    console.log('Ends with tag:', sanitized.endsWith('>'));
+    console.log('=== END HTML SANITIZATION ===');
+    return sanitized;
+}
 async function createNoteActivity(httpClient, body, i) {
     const useHtml = this.getNodeParameter('useHtml', i, false);
     const additionalFields = this.getNodeParameter('additionalFields', i);
     // Use either note or note_html based on checkbox
     if (useHtml) {
         const noteHtml = this.getNodeParameter('noteHtml', i);
-        body.note_html = noteHtml;
+        if (!noteHtml || noteHtml.trim() === '') {
+            throw new Error('Note HTML content is required when HTML mode is enabled');
+        }
+        // Sanitize HTML for Close.com API compatibility
+        const sanitizedHtml = sanitizeHtmlForClose(noteHtml);
+        if (!sanitizedHtml) {
+            throw new Error('Note HTML content cannot be empty after sanitization');
+        }
+        // Test if the HTML is simple enough - if it's just text with basic formatting,
+        // we might want to use plain text instead to avoid Close.com HTML parsing issues
+        const hasComplexHtml = /<(?!\/?(b|i|u|strong|em|br)(\s|>))/i.test(sanitizedHtml);
+        if (hasComplexHtml) {
+            console.warn('Complex HTML detected, Close.com might reject this. Consider using plain text.');
+        }
+        body.note_html = sanitizedHtml;
     }
     else {
         const note = this.getNodeParameter('note', i);
+        if (!note || note.trim() === '') {
+            throw new Error('Note content is required');
+        }
         body.note = note;
     }
     if (additionalFields.contactId)
         body.contact_id = additionalFields.contactId;
     if (additionalFields.userId)
         body.user_id = additionalFields.userId;
+    // Set date_created only if explicitly specified by user
     if (additionalFields.dateCreated)
         body.date_created = additionalFields.dateCreated;
     const response = await httpClient.makeRequest('POST', '/activity/note/', body);
@@ -196,7 +273,7 @@ async function getAllActivities(httpClient, paginator, i) {
     }
     const endpoint = activityType === 'all' ? '/activity/' : `/activity/${activityType}/`;
     const response = await paginator.getAll(endpoint, { returnAll, limit }, qs);
-    return response.map(item => ({ json: item }));
+    return response.map((item) => ({ json: item }));
 }
 async function updateActivity(httpClient, i) {
     const activityType = this.getNodeParameter('activityType', i);

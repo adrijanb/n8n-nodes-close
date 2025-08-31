@@ -360,7 +360,7 @@ exports.emailTemplateFields = [
     {
         displayName: 'Query',
         name: 'query',
-        type: 'string',
+        type: 'json',
         required: true,
         displayOptions: {
             show: {
@@ -369,8 +369,8 @@ exports.emailTemplateFields = [
                 renderMode: ['searchQuery'],
             },
         },
-        default: '',
-        description: 'The search query to use for rendering',
+        default: '{}',
+        description: 'The search query to use for rendering in JSON format (e.g., {"status": "potential"})',
     },
     {
         displayName: 'Additional Fields',

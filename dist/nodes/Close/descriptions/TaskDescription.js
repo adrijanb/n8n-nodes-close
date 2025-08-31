@@ -86,7 +86,10 @@ exports.taskFields = [
     {
         displayName: 'Assigned To',
         name: 'assignedTo',
-        type: 'string',
+        type: 'options',
+        typeOptions: {
+            loadOptionsMethod: 'getUsers',
+        },
         displayOptions: {
             show: {
                 resource: ['task'],
@@ -94,7 +97,7 @@ exports.taskFields = [
             },
         },
         default: '',
-        description: 'The user ID of who the task is assigned to',
+        description: 'The user who the task is assigned to',
     },
     {
         displayName: 'Due Date',
@@ -243,9 +246,12 @@ exports.taskFields = [
             {
                 displayName: 'Assigned To',
                 name: 'assignedTo',
-                type: 'string',
+                type: 'options',
+                typeOptions: {
+                    loadOptionsMethod: 'getUsers',
+                },
                 default: '',
-                description: 'Filter tasks by assigned user ID',
+                description: 'Filter tasks by assigned user',
             },
             {
                 displayName: 'Is Complete',

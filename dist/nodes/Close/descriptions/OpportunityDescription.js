@@ -140,11 +140,14 @@ exports.opportunityFields = [
                 description: 'The ID of the primary contact for this opportunity',
             },
             {
-                displayName: 'User ID',
+                displayName: 'User',
                 name: 'userId',
-                type: 'string',
+                type: 'options',
+                typeOptions: {
+                    loadOptionsMethod: 'getUsers',
+                },
                 default: '',
-                description: 'The ID of the user responsible for this opportunity',
+                description: 'The user responsible for this opportunity',
             },
             {
                 displayName: 'Expected Value',
@@ -274,9 +277,9 @@ exports.opportunityFields = [
             {
                 displayName: 'Query',
                 name: 'query',
-                type: 'string',
-                default: '',
-                description: 'Search query to filter opportunities',
+                type: 'json',
+                default: '{}',
+                description: 'Search query to filter opportunities in JSON format (e.g., {"status": "open", "value__gte": 1000})',
             },
             {
                 displayName: 'Date From',

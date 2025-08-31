@@ -449,11 +449,14 @@ exports.activityFields = [
                 description: 'The ID of the contact associated with this activity',
             },
             {
-                displayName: 'User ID',
+                displayName: 'User',
                 name: 'userId',
-                type: 'string',
+                type: 'options',
+                typeOptions: {
+                    loadOptionsMethod: 'getUsers',
+                },
                 default: '',
-                description: 'The ID of the user who performed this activity',
+                description: 'The user who performed this activity',
             },
             {
                 displayName: 'Date Created',
@@ -470,6 +473,63 @@ exports.activityFields = [
                 description: 'Comma-separated list of fields to include in response',
             },
         ],
+    },
+    // Email Status
+    {
+        displayName: 'Email Status',
+        name: 'emailStatus',
+        type: 'options',
+        displayOptions: {
+            show: {
+                resource: ['activity'],
+                operation: ['create'],
+                activityType: ['email'],
+            },
+        },
+        options: [
+            {
+                name: 'Send Now',
+                value: 'outbox',
+                description: 'Send the email immediately',
+            },
+            {
+                name: 'Schedule for Later',
+                value: 'scheduled',
+                description: 'Schedule the email to be sent at a specific time',
+            },
+            {
+                name: 'Save as Draft',
+                value: 'draft',
+                description: 'Save the email as a draft',
+            },
+            {
+                name: 'Log as Sent',
+                value: 'sent',
+                description: 'Log an already sent email',
+            },
+            {
+                name: 'Log as Received',
+                value: 'inbox',
+                description: 'Log an already received email',
+            },
+        ],
+        default: 'outbox',
+        description: 'The status of the email',
+    },
+    {
+        displayName: 'Scheduled Date',
+        name: 'scheduledDate',
+        type: 'dateTime',
+        displayOptions: {
+            show: {
+                resource: ['activity'],
+                operation: ['create'],
+                activityType: ['email'],
+                emailStatus: ['scheduled'],
+            },
+        },
+        default: '',
+        description: 'When to send the scheduled email',
     },
     // Email specific additional fields
     {
@@ -513,25 +573,6 @@ exports.activityFields = [
                 type: 'string',
                 default: '',
                 description: 'Email template ID to use',
-            },
-            {
-                displayName: 'Send Later',
-                name: 'sendLater',
-                type: 'boolean',
-                default: false,
-                description: 'Whether to schedule this email for later',
-            },
-            {
-                displayName: 'Send At',
-                name: 'sendAt',
-                type: 'dateTime',
-                default: '',
-                displayOptions: {
-                    show: {
-                        sendLater: [true],
-                    },
-                },
-                description: 'When to send the scheduled email',
             },
         ],
     },

@@ -66,7 +66,7 @@ export const smartViewFields: INodeProperties[] = [
 	{
 		displayName: 'Query',
 		name: 'query',
-		type: 'string',
+		type: 'json',
 		required: true,
 		displayOptions: {
 			show: {
@@ -74,9 +74,9 @@ export const smartViewFields: INodeProperties[] = [
 				operation: ['create'],
 			},
 		},
-		default: '',
-		description: 'The search query for the smart view (Advanced Filtering syntax)',
-		placeholder: 'status:"Potential" AND custom_field:"value"',
+		default: '{}',
+		description:
+			'The search query for the smart view in JSON format (e.g., {"status": "potential", "custom_field": "value"})',
 	},
 	{
 		displayName: 'Smart View Type',
@@ -268,10 +268,10 @@ export const smartViewFields: INodeProperties[] = [
 			{
 				displayName: 'Query',
 				name: 'query',
-				type: 'string',
-				default: '',
-				description: 'The new search query for the smart view',
-				placeholder: 'status:"Potential" AND custom_field:"value"',
+				type: 'json',
+				default: '{}',
+				description:
+					'The new search query for the smart view in JSON format (e.g., {"status": "potential", "custom_field": "value"})',
 			},
 			{
 				displayName: 'Shared',
