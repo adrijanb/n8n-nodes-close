@@ -1,19 +1,19 @@
 {
 	"name": "@adrijanx/n8n-nodes-close",
-	"version": "1.0.1",
+	"version": "1.0.3",
 	"description": "n8n node for Close.com CRM integration",
 	"keywords": [
 		"n8n-community-node-package"
 	],
 	"license": "MIT",
-	"homepage": "https://github.com/adrijanbajrami/n8n-nodes-close#readme",
+	"homepage": "https://github.com/adrijanb/n8n-nodes-close#readme",
 	"author": {
 		"name": "Adrijan Bajrami",
 		"email": "adrijan.bajrami@everhype.de"
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/adrijanbajrami/n8n-nodes-close.git"
+		"url": "git+https://github.com/adrijanb/n8n-nodes-close.git"
 	},
 	"main": "index.js",
 	"scripts": {
