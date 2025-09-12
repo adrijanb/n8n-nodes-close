@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CloseHttpClient = void 0;
-const error_1 = require("../mappers/error");
+const CloseErrorHandlerManager_1 = require("../mappers/CloseErrorHandlerManager");
 class CloseHttpClient {
     constructor(context) {
         this.context = context;
@@ -44,7 +44,12 @@ class CloseHttpClient {
             return response;
         }
         catch (error) {
-            throw (0, error_1.handleCloseApiError)(error, endpoint, method, body);
+            // Use the new abstracted error handler with full context
+            throw CloseErrorHandlerManager_1.closeErrorHandler.handleErrorWithContext(error, {
+                endpoint,
+                method,
+                requestBody: body,
+            });
         }
     }
 }

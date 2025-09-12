@@ -690,6 +690,87 @@ export const leadFields: INodeProperties[] = [
 					},
 				],
 			},
+			{
+				displayName: 'Addresses',
+				name: 'addresses',
+				type: 'fixedCollection',
+				default: {},
+				description: 'Addresses to update for the lead',
+				typeOptions: {
+					multipleValues: true,
+				},
+				options: [
+					{
+						name: 'address',
+						displayName: 'Address',
+						values: [
+							{
+								displayName: 'Type',
+								name: 'type',
+								type: 'options',
+								options: [
+									{
+										name: 'Office',
+										value: 'office',
+									},
+									{
+										name: 'Mailing',
+										value: 'mailing',
+									},
+									{
+										name: 'Other',
+										value: 'other',
+									},
+								],
+								default: 'office',
+								description: 'Type of address',
+							},
+							{
+								displayName: 'Address Line 1',
+								name: 'address_1',
+								type: 'string',
+								default: '',
+								description: 'First line of the address',
+							},
+							{
+								displayName: 'Address Line 2',
+								name: 'address_2',
+								type: 'string',
+								default: '',
+								description: 'Second line of the address (optional)',
+							},
+							{
+								displayName: 'City',
+								name: 'city',
+								type: 'string',
+								default: '',
+								description: 'City',
+							},
+							{
+								displayName: 'State',
+								name: 'state',
+								type: 'string',
+								default: '',
+								description: 'State or province',
+							},
+							{
+								displayName: 'Postal Code',
+								name: 'zipcode',
+								type: 'string',
+								default: '',
+								description: 'Postal or ZIP code',
+							},
+							{
+								displayName: 'Country',
+								name: 'country',
+								type: 'string',
+								default: '',
+								description: 'Country',
+							},
+						],
+					},
+				],
+			},
 		],
 	},
 

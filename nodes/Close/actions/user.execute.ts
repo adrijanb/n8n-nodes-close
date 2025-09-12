@@ -65,7 +65,7 @@ async function getAllUsers(
 async function getCurrentUser(
 	this: IExecuteFunctions,
 	httpClient: CloseHttpClient,
-	i: number,
+	_i: number,
 ): Promise<INodeExecutionData[]> {
 	const response = await httpClient.makeRequest('GET', '/me/');
 	

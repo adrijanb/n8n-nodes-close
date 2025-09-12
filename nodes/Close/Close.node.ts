@@ -223,7 +223,7 @@ export class Close implements INodeType {
 						value: status.id,
 						description: `${status.label} (${status.id})`,
 					}));
-				} catch (error) {
+				} catch (_error) {
 					return [];
 				}
 			},
@@ -244,7 +244,7 @@ export class Close implements INodeType {
 							value: field.id,
 							description: `${field.name} (${field.type}) - ${field.id}`,
 						}));
-				} catch (error) {
+				} catch (_error) {
 					return [];
 				}
 			},
@@ -265,7 +265,7 @@ export class Close implements INodeType {
 							value: field.id,
 							description: `${field.name} (User Field) - ${field.id}`,
 						}));
-				} catch (error) {
+				} catch (_error) {
 					return [];
 				}
 			},
@@ -284,7 +284,7 @@ export class Close implements INodeType {
 						value: field.id,
 						description: `${field.name} (${field.type}) - ${field.id}`,
 					}));
-				} catch (error) {
+				} catch (_error) {
 					return [];
 				}
 			},
@@ -305,7 +305,7 @@ export class Close implements INodeType {
 						value: field.id,
 						description: `${field.name} (${field.type}) - ${field.id}`,
 					}));
-				} catch (error) {
+				} catch (_error) {
 					return [];
 				}
 			},
@@ -324,7 +324,7 @@ export class Close implements INodeType {
 						value: status.id,
 						description: `${status.label} (${status.id})`,
 					}));
-				} catch (error) {
+				} catch (_error) {
 					return [];
 				}
 			},
@@ -342,7 +342,7 @@ export class Close implements INodeType {
 						value: user.id,
 						description: `${user.first_name} ${user.last_name} (${user.email})`.trim(),
 					}));
-				} catch (error) {
+				} catch (_error) {
 					return [];
 				}
 			},

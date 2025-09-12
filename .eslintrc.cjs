@@ -16,7 +16,7 @@ module.exports = {
 	],
 	extends: [
 		'eslint:recommended',
-		'@typescript-eslint/recommended',
+		'plugin:@typescript-eslint/recommended',
 	],
 	rules: {
 		'@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
@@ -27,5 +27,6 @@ module.exports = {
 	ignorePatterns: [
 		'dist/**',
 		'node_modules/**',
+		'package.json',
 	],
 };

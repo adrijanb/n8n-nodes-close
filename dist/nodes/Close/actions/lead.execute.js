@@ -238,6 +238,10 @@ async function updateLead(httpClient, i) {
             }
         }
     }
+    // Addresses
+    if (updateFields.addresses && updateFields.addresses.address) {
+        body.addresses = updateFields.addresses.address.filter((addr) => addr.address_1 || addr.city || addr.state || addr.zipcode || addr.country);
+    }
     const response = await httpClient.makeRequest('PUT', `/lead/${leadId}/`, body);
     const convertedResponse = await convertCustomFields(response, httpClient);
     return [{ json: convertedResponse }];

@@ -40,7 +40,7 @@ async function getAllUsers(httpClient, paginator, i) {
     const response = await paginator.getAll('/user/', { returnAll, limit }, qs);
     return response.map(item => ({ json: item }));
 }
-async function getCurrentUser(httpClient, i) {
+async function getCurrentUser(httpClient, _i) {
     const response = await httpClient.makeRequest('GET', '/me/');
     return [{ json: response }];
 }

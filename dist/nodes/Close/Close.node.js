@@ -222,7 +222,7 @@ class Close {
                             description: `${status.label} (${status.id})`,
                         }));
                     }
-                    catch (error) {
+                    catch (_error) {
                         return [];
                     }
                 },
@@ -241,7 +241,7 @@ class Close {
                             description: `${field.name} (${field.type}) - ${field.id}`,
                         }));
                     }
-                    catch (error) {
+                    catch (_error) {
                         return [];
                     }
                 },
@@ -260,7 +260,7 @@ class Close {
                             description: `${field.name} (User Field) - ${field.id}`,
                         }));
                     }
-                    catch (error) {
+                    catch (_error) {
                         return [];
                     }
                 },
@@ -277,7 +277,7 @@ class Close {
                             description: `${field.name} (${field.type}) - ${field.id}`,
                         }));
                     }
-                    catch (error) {
+                    catch (_error) {
                         return [];
                     }
                 },
@@ -294,7 +294,7 @@ class Close {
                             description: `${field.name} (${field.type}) - ${field.id}`,
                         }));
                     }
-                    catch (error) {
+                    catch (_error) {
                         return [];
                     }
                 },
@@ -311,7 +311,7 @@ class Close {
                             description: `${status.label} (${status.id})`,
                         }));
                     }
-                    catch (error) {
+                    catch (_error) {
                         return [];
                     }
                 },
@@ -327,7 +327,7 @@ class Close {
                             description: `${user.first_name} ${user.last_name} (${user.email})`.trim(),
                         }));
                     }
-                    catch (error) {
+                    catch (_error) {
                         return [];
                     }
                 },

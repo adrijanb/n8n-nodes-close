@@ -10,16 +10,14 @@ module.exports = {
 	],
 	coverageDirectory: 'coverage',
 	coverageReporters: ['text', 'lcov', 'html'],
-	moduleNameMapping: {
+	moduleNameMapper: {
 		'^@/(.*)$': '<rootDir>/nodes/$1',
 	},
 	transform: {
 		'^.+\\.ts$': ['ts-jest', {
 			tsconfig: {
-				compilerOptions: {
-					strict: false,
-					noImplicitAny: false,
-				}
+				strict: false,
+				noImplicitAny: false,
 			}
 		}]
 	}

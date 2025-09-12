@@ -1,0 +1,50 @@
+{
+	"name": "Lead Address Update Example",
+	"nodes": [
+		{
+			"parameters": {
+				"resource": "lead",
+				"operation": "update",
+				"leadId": "lead_xxxxxxxxxxxxx",
+				"updateFields": {
+					"name": "Acme Corporation",
+					"addresses": {
+						"address": [
+							{
+								"type": "office",
+								"address_1": "123 Business Street",
+								"address_2": "Suite 456",
+								"city": "Berlin",
+								"state": "Berlin",
+								"zipcode": "10115",
+								"country": "Germany"
+							},
+							{
+								"type": "mailing",
+								"address_1": "456 Mail Avenue",
+								"city": "Munich",
+								"state": "Bavaria",
+								"zipcode": "80331",
+								"country": "Germany"
+							}
+						]
+					}
+				}
+			},
+			"id": "lead-update-with-address",
+			"name": "Update Lead with Address",
+			"type": "@adrijanx/n8n-nodes-close.close",
+			"typeVersion": 1,
+			"position": [260, 300]
+		}
+	],
+	"connections": {},
+	"createdAt": "2025-09-12T10:31:52.000Z",
+	"id": "lead-address-update-workflow",
+	"settings": {},
+	"staticData": {},
+	"tags": [],
+	"triggerCount": 0,
+	"updatedAt": "2025-09-12T10:31:52.000Z",
+	"versionId": "1"
+}

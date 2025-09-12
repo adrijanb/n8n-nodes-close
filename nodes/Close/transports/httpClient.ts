@@ -5,7 +5,7 @@ import {
 	IHttpRequestMethods,
 	IHttpRequestOptions,
 } from 'n8n-workflow';
-import { handleCloseApiError } from '../mappers/error';
+import { closeErrorHandler } from '../mappers/CloseErrorHandlerManager';
 
 export class CloseHttpClient {
 	constructor(private context: IExecuteFunctions | IHookFunctions | ILoadOptionsFunctions) {}
@@ -58,7 +58,12 @@ export class CloseHttpClient {
 			console.log('=== END SUCCESS ===');
 			return response;
 		} catch (error) {
-			throw handleCloseApiError(error, endpoint, method, body);
+			// Use the new abstracted error handler with full context
+			throw closeErrorHandler.handleErrorWithContext(error, {
+				endpoint,
+				method,
+				requestBody: body,
+			});
 		}
 	}
 }
