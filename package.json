@@ -1,6 +1,6 @@
 {
 	"name": "@adrijanx/n8n-nodes-close",
-	"version": "1.0.4",
+	"version": "1.0.5",
 	"description": "n8n node for Close.com CRM integration",
 	"keywords": [
 		"n8n-community-node-package"

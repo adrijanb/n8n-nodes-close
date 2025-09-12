@@ -95,4 +95,8 @@ export declare class ErrorHandlerManager {
      * Debug logging method
      */
     private logDebug;
+    /**
+     * Creates a replacer function to handle circular references in JSON.stringify
+     */
+    private createCircularReplacer;
 }

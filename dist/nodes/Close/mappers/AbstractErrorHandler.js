@@ -149,8 +149,28 @@ class ErrorHandlerManager {
             return;
         console.log(message);
         if (data) {
-            console.log(JSON.stringify(data, null, 2));
+            try {
+                console.log(JSON.stringify(data, this.createCircularReplacer(), 2));
+            }
+            catch (error) {
+                console.log('[Error serializing debug data]:', String(data));
+            }
         }
+    }
+    /**
+     * Creates a replacer function to handle circular references in JSON.stringify
+     */
+    createCircularReplacer() {
+        const seen = new WeakSet();
+        return (key, value) => {
+            if (typeof value === 'object' && value !== null) {
+                if (seen.has(value)) {
+                    return '[Circular Reference]';
+                }
+                seen.add(value);
+            }
+            return value;
+        };
     }
 }
 exports.ErrorHandlerManager = ErrorHandlerManager;
